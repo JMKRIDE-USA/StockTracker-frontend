@@ -3,26 +3,27 @@ import { useQuery } from 'react-query';
 
 import jmklogo from '../jmklogo.png';
 import { processParts } from '../modules/data.js';
-import { server_url, api_path } from "../constants.js";
+import { server_url, api_path, ALL_PART_TYPES } from "../constants.js";
+import { InventoryDisplay } from "./elements/inventory_display.js";
 
 export function Home() {
 
   let inventory = useQuery(
-    "inventory/all",
+    "inventory/fetch-all",
     () => fetch(
       server_url + api_path + "inventory/fetch-all",
       {method: 'GET'}
     ).then(res => res.json())
   );
   let parts = useQuery(
-    "parts/all",
+    "parts/fetch-all",
     () => fetch(
       server_url + api_path + "parts/fetch-all",
       {method: 'GET'}
     ).then(res => res.json())
   );
   let completesets = useQuery(
-    "completesets/all",
+    "completesets/fetch-all",
     () => fetch(
       server_url + api_path + "completesets/fetch-all",
       {method: 'GET'}
@@ -64,6 +65,15 @@ export function Home() {
       { ((!isLoading) && (!errorOccurred) && hasData)
           ? <p>Success</p>
           : <p> Loading... </p>
+      }
+      {
+        ALL_PART_TYPES.map(
+          (part_type) => <InventoryDisplay
+                          className="InventoryDisplay"
+                          part_type={part_type}
+                          key={part_type}
+                         />
+        )
       }
     </div>
   );

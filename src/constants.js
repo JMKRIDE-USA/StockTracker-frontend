@@ -16,6 +16,37 @@ export const PART_TYPE_FROM_VALUE = {
   "other": PART_TYPE.OTHER,
 }
 
+export const ALL_PART_TYPES = [
+  PART_TYPE.WHEEL,
+  PART_TYPE.TRUCK,
+  PART_TYPE.PLATE,
+  PART_TYPE.GRIP,
+  PART_TYPE.APPAREL,
+  PART_TYPE.OTHER,
+]
+
+export const COLOR = {
+  Red: "#ed4134",
+  Green: "#3df540",
+  Yellow: "#fff712",
+  Black: "#000000",
+  Orange: "#f07c00",
+  Marine: "#004fed",
+  Cyan: "#00a0db",
+  Pink: "#e8179b",
+  Lavender: "#ae52ff",
+  Violet: "#a600ff",
+  White: "#ffffff",
+  Chrome: "#828282",
+  Mint: "#3bffb7",
+  Gold: "#e8d151",
+  Transparent: "#b0b0b0",
+}
+
+export const ALL_COLORS = Object.keys(COLOR)
+
+
+
 export const server_url = "http://127.0.0.1:5000/"
 export const api_path = "api/v1/"
 

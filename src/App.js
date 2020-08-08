@@ -6,10 +6,10 @@ import { Navbar, Nav } from 'react-bootstrap';
 
 import './App.css';
 import jmklogo from './jmklogo.png';
-import { Home } from './pages/Home.js';
-import { WithdrawForm } from './forms/withdraw.js';
-import { DepositForm } from './forms/deposit.js';
-import { StockControlPanel } from './pages/stock_control_panel.js';
+import { Home } from './pages/home.js';
+import { WithdrawPage } from './pages/withdraw.js';
+import { DepositPage } from './pages/deposit.js';
+import { ControlPanel } from './pages/control_panel.js';
 
 function App() {
   return (
@@ -32,13 +32,13 @@ function App() {
         </Navbar>
         <Switch>
           <Route path="/withdraw">
-            <WithdrawForm  />
+            <WithdrawPage  />
           </Route>
           <Route path="/deposit">
-            <DepositForm  />
+            <DepositPage  />
           </Route>
           <Route path="/stock-control-panel">
-            <StockControlPanel  />
+            <ControlPanel  />
           </Route>
           <Route path="/">
             <Home />

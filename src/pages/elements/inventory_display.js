@@ -19,6 +19,16 @@ export function InventoryDisplay({part_type}){
       {method: 'GET'}
     ).then(res => res.json())
   );
+
+  let inventory_fetch_request = "inventory/fetch-all"
+  let inventory = useQuery(
+    inventory_fetch_request,
+    () => fetch(
+      server_url + api_path + inventory_fetch_request,
+      {method: 'GET'}
+    ).then(res => res.json())
+  );
+
   if(parts.loading){
     return <h1>Loading {part_type} Parts...</h1>
   }
@@ -27,10 +37,29 @@ export function InventoryDisplay({part_type}){
       Error Loading {part_type} Parts: {parts.error.message}
     </h1>
   }
+
+  if (inventory.loading){
+    return <h1>Loading {part_type} Inventory...</h1>
+  }
+  if(inventory.error){
+    return <h1 className="ResultErrorReport">
+      Error Loading {part_type} Inventory: {inventory.error.message}
+    </h1>
+  }
+
   let processed_parts;
+  let dataPoints = [];
   if(parts.data){
     processed_parts = processParts(parts.data);
+    if(inventory.data){
+      Object.keys(processed_parts).forEach(function(id) {
+        dataPoints.push({
+          y: inventory.data[id], label: processed_parts[id].name, color: processed_parts[id].color
+        });
+      });
+    }
   }
+
 
   function addSymbols(e){
     var suffixes = ["", "K", "M", "B"];
@@ -60,15 +89,7 @@ export function InventoryDisplay({part_type}){
     },
     data: [{
       type: "bar",
-      dataPoints: [
-        { y:  2200, label: "Facebook", color: "Red"},
-        { y:  1800, label: "YouTube" },
-        { y:  800, label: "Instagram" },
-        { y:  563, label: "Qzone" },
-        { y:  376, label: "Weibo" },
-        { y:  336, label: "Twitter" },
-        { y:  330, label: "Reddit" }
-      ]
+      dataPoints: dataPoints,
     }],
   }
 

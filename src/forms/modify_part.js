@@ -57,7 +57,7 @@ export function ModifyPartForm(){
       setResultWasError(false);
       setTypeFilter("")
       setAction("")
-      partIDRef.current = null
+      document.getElementById("modify_part").reset();
     }
   }
 

@@ -12,7 +12,7 @@ import { processParts, getPartByName } from '../../modules/data.js';
  *
  * pass partType to filter parts by that type
  */
-export function SelectPartFormElement({ partIDRef, partType}){
+export function SelectPartFormElement({ partIDRef, partType, label}){
   const [selectedPartName, setSelectedPartName] = useState("");
   const [selectedPartID, setSelectedPartID] = useState("");
 
@@ -64,15 +64,19 @@ export function SelectPartFormElement({ partIDRef, partType}){
     );
   }
 
+  if(!label){
+    label = "Select Part:"
+  }
+
   return (
     <label>
-      Select Part:
+      { label }
       <select
         value={selectedPartName}
         name="selectedPartName"
         onChange={onChange}
       >
-        <option value="" selected disabled hidden>Choose here</option>
+        <option value="" selected hidden>Choose here</option>
         { getPartOptions() }
       </select>
     </label>

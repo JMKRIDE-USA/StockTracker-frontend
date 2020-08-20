@@ -56,6 +56,7 @@ export function WithdrawPartForm() {
       setResult("Success!")
       setResultWasError(false);
       setQuantity("")
+      document.getElementById("withdraw_part").reset();
     }
   }
 

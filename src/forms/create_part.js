@@ -63,6 +63,7 @@ export function CreatePartForm(){
       setQuantity("")
       setColor("")
       setActive("")
+      document.getElementById("create_part").reset();
     }
   }
   return (

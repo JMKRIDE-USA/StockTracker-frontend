@@ -49,23 +49,24 @@ export function Home() {
       <p>
         JMKRIDE Stock Tracking System
       </p>
-      { isLoading &&
-        <p> Loading Inventory...</p>
-      }
+      <div className="ServerStatusMessage">
+        { isLoading &&
+          <p> Loading Inventory...</p>
+        }
 
-      { errorOccurred &&
-        <div className="ErrorMessage">
-          <p>ERROR Occured!</p>
-          <p>{parts.error ? parts.error.message : "Parts OK"}</p>
-          <p>{inventory.error ? inventory.error.message : "Inventory OK"}</p>
-          <p>{completesets.error ? completesets.error.message : "Complete Sets OK"}</p>
-        </div>
-      }
-
-      { ((!isLoading) && (!errorOccurred) && hasData)
-          ? <p>Success</p>
-          : <p> Loading... </p>
-      }
+        { errorOccurred &&
+          <div className="ResultErrorReport">
+            <p>ERROR Occured!</p>
+            <p>{parts.error ? parts.error.message : "Parts OK"}</p>
+            <p>{inventory.error ? inventory.error.message : "Inventory OK"}</p>
+            <p>{completesets.error ? completesets.error.message : "Complete Sets OK"}</p>
+          </div>
+        }
+        { ((!isLoading) && (!errorOccurred) && hasData)
+            ? <p className="ResultSuccessReport"> Server Data Loaded Successfully</p>
+            : <p> Loading... </p>
+        }
+      </div>
       {
         ALL_PART_TYPES.map(
           (part_type) => <InventoryDisplay

@@ -56,6 +56,7 @@ export function DepositPartForm() {
       setResult("Success!")
       setResultWasError(false);
       setQuantity("")
+      document.getElementById("deposit_part").reset();
     }
   }
 

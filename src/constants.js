@@ -45,7 +45,10 @@ export const COLOR = {
 
 export const ALL_COLORS = Object.keys(COLOR)
 
-
+export const DATA_TYPE = {
+  PART: "Part",
+  COMPLETE_SET: "Completeset",
+}
 
 //export const server_url = "http://192.168.1.147:5000/"
 export const server_url = "http://127.0.0.1:5000/"

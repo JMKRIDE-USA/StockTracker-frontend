@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 
-import { server_url, api_path } from '../../constants.js';
-import { processParts, getPartByName } from '../../modules/data.js';
+import { server_url, api_path, DATA_TYPE } from '../../constants.js';
+import { processDBData, getDBDataByName } from '../../modules/data.js';
 
 /*
  * SelectPartFormElement:
@@ -40,7 +40,7 @@ export function SelectPartFormElement({ partIDRef, partType, label}){
   }
   let processed_parts;
   if (!(parts.isLoading || parts.isError) && parts.data){
-    processed_parts = processParts(parts.data);
+    processed_parts = processDBData(parts.data, DATA_TYPE.PART);
   }
 
   function onChange(e){
@@ -48,7 +48,7 @@ export function SelectPartFormElement({ partIDRef, partType, label}){
       return
     }
     setSelectedPartName(e.target.value);
-    setSelectedPartID(getPartByName(e.target.value, processed_parts).id);
+    setSelectedPartID(getDBDataByName(e.target.value, processed_parts).id);
   }
 
   function getPartOptions(){

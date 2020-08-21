@@ -7,6 +7,8 @@ import { Navbar, Nav } from 'react-bootstrap';
 import './App.css';
 import jmklogo from './jmklogo.png';
 import { Home } from './pages/home.js';
+import { PartsInventoryPage } from './pages/parts_inventory.js';
+import { CompletesetsInventoryPage } from './pages/completesets_inventory.js';
 import { WithdrawPage } from './pages/withdraw.js';
 import { DepositPage } from './pages/deposit.js';
 import { ControlPanel } from './pages/control_panel.js';
@@ -26,11 +28,19 @@ function App() {
             />
           </Navbar.Brand>
           <Nav.Link href="/">Home</Nav.Link>
+          <Nav.Link href="/parts-inventory">Parts Inventory</Nav.Link>
+          <Nav.Link href="/completesets-inventory">Complete Sets Inventory</Nav.Link>
           <Nav.Link href="/withdraw">Withdraw Stock</Nav.Link>
           <Nav.Link href="/deposit">Deposit Stock</Nav.Link>
           <Nav.Link href="/stock-control-panel">Control Panel</Nav.Link>
         </Navbar>
         <Switch>
+          <Route path="/parts-inventory">
+            <PartsInventoryPage  />
+          </Route>
+          <Route path="/completesets-inventory">
+            <CompletesetsInventoryPage  />
+          </Route>
           <Route path="/withdraw">
             <WithdrawPage  />
           </Route>

@@ -5,7 +5,7 @@ import { server_url, api_path, PART_TYPE } from "../constants.js";
 import { SelectPartFormElement } from "./elements/select_part.js";
 
 
-export function CreateCompleteSetForm(){
+export function CreateCompletesetForm(){
 
   const [name, setName] = useState("");
   const [active, setActive] = useState("");
@@ -26,12 +26,11 @@ export function CreateCompleteSetForm(){
   const [result, setResult] = useState("");
   const [resultWasError, setResultWasError] = useState(false);
 
-  const [mutate, { error }] = useMutation(({to_submit}) => fetch(
+  const [mutate, { error }] = useMutation(({form_data}) => fetch(
     server_url + api_path + "completesets/actions/create",
     {
       method: "PUT",
-      headers: {"content_type": "application/json"},
-      body: JSON.stringify(to_submit)
+      body: form_data,
     }).then(res => res.json),
     {
       onSuccess: async () => {
@@ -45,7 +44,6 @@ export function CreateCompleteSetForm(){
     let to_submit = {
       name: name,
       image_data: image,
-      image_name: image.name,
       active: active === "yes",
 
       awheel1: awheel1.current,
@@ -53,6 +51,7 @@ export function CreateCompleteSetForm(){
       atruck: atruck.current,
       adeck: adeck.current,
       agrip: agrip.current,
+
       bwheel1: bwheel1.current,
       bwheel2: bwheel2.current,
       btruck: btruck.current,
@@ -63,7 +62,7 @@ export function CreateCompleteSetForm(){
     }
     let formComplete = true;
     Object.keys(to_submit).forEach(function(key) {
-      if(to_submit[key] === null || to_submit[key] === ""){
+      if(to_submit[key] === null ){ //|| to_submit[key] === ""){
         formComplete = false;
       }
     });
@@ -75,8 +74,14 @@ export function CreateCompleteSetForm(){
     }
     console.log("Submitting:", to_submit);
 
+    let form_data = new FormData();
+    for( var key in to_submit ) {
+      form_data.append(key, to_submit[key]);
+    }
+
+
     try {
-      await mutate({to_submit})
+      await mutate({form_data})
     } catch (error) {
       console.log("ERROR SUBMITTING", error)
     }

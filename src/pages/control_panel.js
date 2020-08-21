@@ -2,7 +2,8 @@ import React from 'react';
 
 import { CreatePartForm } from '../forms/create_part.js';
 import { ModifyPartForm } from '../forms/modify_part.js';
-import { CreateCompleteSetForm } from '../forms/create_completeset.js';
+import { CreateCompletesetForm } from '../forms/create_completeset.js';
+import { ModifyCompletesetForm } from '../forms/modify_completeset.js';
 
 export function ControlPanel(){
   return (
@@ -10,7 +11,8 @@ export function ControlPanel(){
       <h1>Control Panel</h1>
       <CreatePartForm/>
       <ModifyPartForm/>
-      <CreateCompleteSetForm/>
+      <CreateCompletesetForm/>
+      <ModifyCompletesetForm/>
     </div>
   );
 }

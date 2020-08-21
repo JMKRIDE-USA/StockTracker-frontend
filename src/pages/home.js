@@ -2,9 +2,8 @@ import React from 'react';
 import { useQuery } from 'react-query';
 
 import jmklogo from '../jmklogo.png';
-import { processParts } from '../modules/data.js';
-import { server_url, api_path, ALL_PART_TYPES } from "../constants.js";
-import { InventoryDisplay } from "./elements/inventory_display.js";
+import { processDBData } from '../modules/data.js';
+import { server_url, api_path, DATA_TYPE } from "../constants.js";
 
 export function Home() {
 
@@ -39,7 +38,7 @@ export function Home() {
 
   let processed_parts;
   if (!isLoading && !errorOccurred && hasData) {
-    processed_parts = processParts(parts.data);
+    processed_parts = processDBData(parts.data, DATA_TYPE.PART);
   }
   console.log("Processed Parts:", processed_parts);
 
@@ -67,15 +66,6 @@ export function Home() {
             : <p> Loading... </p>
         }
       </div>
-      {
-        ALL_PART_TYPES.map(
-          (part_type) => <InventoryDisplay
-                          className="InventoryDisplay"
-                          part_type={part_type}
-                          key={part_type}
-                         />
-        )
-      }
     </div>
   );
 }

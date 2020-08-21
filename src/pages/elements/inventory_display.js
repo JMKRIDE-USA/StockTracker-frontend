@@ -3,8 +3,8 @@ import { useQuery } from 'react-query';
 
 import CanvasJSReact from "../../external_dependencies/canvasjs.react.js";
 
-import { server_url, api_path } from "../../constants.js";
-import { processParts } from "../../modules/data.js";
+import { server_url, api_path, DATA_TYPE } from "../../constants.js";
+import { processDBData } from "../../modules/data.js";
 
 var CanvasJS = CanvasJSReact.CanvasJS;
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
@@ -50,7 +50,7 @@ export function InventoryDisplay({part_type}){
   let processed_parts;
   let dataPoints = [];
   if(parts.data){
-    processed_parts = processParts(parts.data);
+    processed_parts = processDBData(parts.data, DATA_TYPE.PART);
     if(inventory.data){
       Object.keys(processed_parts).forEach(function(id) {
         dataPoints.push({

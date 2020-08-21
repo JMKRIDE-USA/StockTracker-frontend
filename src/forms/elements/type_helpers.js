@@ -9,7 +9,7 @@ export function makeTypeSelector(value, name, onChange, allowNone){
       }
       <option value="wheel">Wheel</option>
       <option value="truck">Truck</option>
-      <option value="plate">Plate</option>
+      <option value="deck">Deck</option>
       <option value="grip">Grip</option>
       <option value="apparel">Apparel</option>
       <option value="other">Other</option>

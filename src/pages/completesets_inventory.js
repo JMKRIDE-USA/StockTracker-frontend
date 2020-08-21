@@ -21,7 +21,7 @@ function CompletesetInventoryEntry({completeset_id, completeset}){
     max_amount = cs_stock.data[0]
     limiting_part_id = cs_stock.data[1]
   }
-  let part_request_string = "parts/fetch=all"
+  let part_request_string = "parts/fetch-all"
   let limiting_part_response = useQuery(
     part_request_string,
     () => fetch(

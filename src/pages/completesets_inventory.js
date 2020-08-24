@@ -6,9 +6,9 @@ import { processDBData } from "../modules/data.js";
 import jmklogo from '../jmklogo.png';
 
 
-function CompletesetInventoryEntry({completeset_id, completeset}){
+function CompletesetInventoryEntry({completeset_id, completeset, processed_parts}){
   let request_string = "completesets/actions/stock?id=" + String(completeset_id)
-  let cs_stock = useQuery(
+  let cs_stock_response = useQuery(
     request_string,
     () => fetch(
       server_url + api_path + request_string,
@@ -17,44 +17,64 @@ function CompletesetInventoryEntry({completeset_id, completeset}){
   )
   let max_amount=0
   let limiting_part_id=0
-  if(cs_stock.data){
-    max_amount = cs_stock.data[0]
-    limiting_part_id = cs_stock.data[1]
+  if(cs_stock_response.data){
+    max_amount = cs_stock_response.data[0]
+    limiting_part_id = cs_stock_response.data[1]
   }
-  let part_request_string = "parts/fetch-all"
-  let limiting_part_response = useQuery(
-    part_request_string,
-    () => fetch(
-      server_url + api_path + part_request_string,
-      {method: 'GET'},
-    ).then(res=>res.json())
-  )
   let limiting_part;
-  let processed_parts;
-  if(limiting_part_response.data){
-    processed_parts = processDBData(limiting_part_response.data, DATA_TYPE.PART)
+  if(processed_parts){
     limiting_part = processed_parts[limiting_part_id]
   }
-  let cs_request_string = "completesets/fetch?id=" + String(completeset_id)
-  let cs_info = useQuery(
-    cs_request_string,
-    () => fetch(
-      server_url + api_path + cs_request_string,
-      {method: 'GET'},
-    ).then(res=>res.json())
-  )
+  let id_quantities = {} /* id: quantity */
+  completeset.all_parts.forEach(
+    function(id) {
+      if(id in id_quantities){
+        id_quantities[id] += 1;
+      } else {
+        id_quantities[id] = 1;
+      }
+    }
+  );
   let cs_desc = "";
-  if(cs_request_string.data){
-    let completeset_obj = processDBData(cs_request_string.data, DATA_TYPE.COMPLETE_SET)[completeset_id];
-    completeset_obj.all_parts.forEach((id) => cs_desc = cs_desc + processed_parts[id].name)
+  if(processed_parts){
+    Object.keys(id_quantities).forEach(
+      function(id) {
+        cs_desc = cs_desc.concat(String(id_quantities[id]), " ", processed_parts[id].name, "s, ");
+      }
+    );
+    if(cs_desc !== ""){
+      cs_desc = cs_desc.substring(0, cs_desc.length - 2)
+    }
   }
+
+  let image_url;
+  let image_request_string = "completesets/actions/fetch-image?filename=" + String(completeset.filename);
+  useQuery(
+    image_request_string,
+    () => fetch(
+      server_url + api_path + image_request_string,
+      {method: 'GET'},
+    ).then(res=>res.blob()
+    ).then(image => {
+      image_url = URL.createObjectURL(image);
+    })
+  );
 
   return (
     <div className="Form">
       <div className="FormBox">
-        <p className="RowFormTitle">Complete Set: {completeset.name}</p>
         <div className="FormRow">
-          <p className="CompletesetInfo"></p>
+          {image_url ?
+            <img src={image_url} alt={completeset.filename}/>
+            :<></>
+          }
+          <p className="RowFormTitle">Complete Set: {completeset.name}</p>
+        </div>
+        <div className="FormRow">
+          {(cs_desc !== "") ?
+            <p className="CompletesetInfo">Description: {cs_desc}.</p>
+            :<></>
+          }
         </div>
         <div className="FormRow">
           {(limiting_part && max_amount) ?
@@ -69,6 +89,20 @@ function CompletesetInventoryEntry({completeset_id, completeset}){
 
 
 export function CompletesetsInventoryPage() {
+
+  let part_request_string = "parts/fetch-all"
+  let all_parts = useQuery(
+    part_request_string,
+    () => fetch(
+      server_url + api_path + part_request_string,
+      {method: 'GET'},
+    ).then(res=>res.json())
+  )
+  let processed_parts;
+  if(all_parts.data){
+    processed_parts = processDBData(all_parts.data, DATA_TYPE.PART)
+  }
+
   let request_string = "completesets/fetch-all";
   let completesets = useQuery(
     request_string,
@@ -77,11 +111,14 @@ export function CompletesetsInventoryPage() {
       {method: 'GET'},
     ).then(res=>res.json())
   )
-  if(completesets.loading) {
-    return <p>Loading Complete Sets...</p>
+  if(completesets.loading || all_parts.loading) {
+    return <p>Loading Complete Sets and Parts...</p>
   }
   if(completesets.error) {
     return <p className="ResultErrorReport">Error Occurred: {completesets.error.message}</p>
+  }
+  if(all_parts.error) {
+    return <p className="ResultErrorReport">Error Occurred: {all_parts.error.message}</p>
   }
   let all_completesets = {}
   if(completesets.data){
@@ -94,7 +131,12 @@ export function CompletesetsInventoryPage() {
         JMKRIDE Complete Sets Inventory
       </p>
     { Object.keys(all_completesets).map(
-      (id) => <CompletesetInventoryEntry completeset_id={id} completeset={all_completesets[id]} key={id}/>
+      (id) => <CompletesetInventoryEntry
+               completeset_id={id}
+               completeset={all_completesets[id]}
+               processed_parts={processed_parts}
+               key={id}
+              />
     )
     }
     </div>

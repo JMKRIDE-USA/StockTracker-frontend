@@ -26,7 +26,18 @@ class Completeset {
     this.btruck = row_data[12];
     this.bdeck = row_data[13];
     this.bgrip = row_data[14];
-    this.all_parts = row_data.slice(4,14);
+    this.all_parts = [
+      this.awheel1,
+      this.awheel2,
+      this.atruck,
+      this.adeck,
+      this.agrip,
+      this.bwheel1,
+      this.bwheel2,
+      this.btruck,
+      this.bdeck,
+      this.bgrip,
+    ];
   }
 }
 

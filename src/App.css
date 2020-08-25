@@ -79,8 +79,22 @@
 }
 
 .InventoryDisplay {
-  height: 500px;
-  width: 45%;
+  width:1200px;
+  border-width: 1px;
+  border-color: white;
+  border-style: solid;
+  margin: 10px;
+  flex: 1;
+}
+.AllInventoryDisplays {
+  padding: 10px;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -moz-flex;
+  display: -webkit-flex;
+  display: flex;
+  flex-direction: column;
 }
 
 label {

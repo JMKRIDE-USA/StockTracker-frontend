@@ -79,7 +79,7 @@ function CompletesetInventoryEntry({completeset_id, completeset, processed_parts
         <div className="FormRow">
           {(limiting_part && max_amount) ?
             <p className="CompletesetInfo">You could build {max_amount} of these until you run out of {limiting_part.name}s.</p>
-            :<></>
+            :<p className="CompletesetInfo ResultErrorReport">Build information unavailable.</p>
           }
         </div>
       </div>

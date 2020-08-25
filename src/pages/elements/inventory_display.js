@@ -74,16 +74,25 @@ export function InventoryDisplay({part_type}){
   const options = {
     animationEnabled: true,
     theme: "dark2",
-    width: "900",
     title:{
       text: "JMKRIDE " + part_type + " Inventory",
+      fontSize: "24",
+    },
+    toolTip: {
+      fontColor: "#000000",
+      backgroundColor: "#ffffff",
     },
     axisX: {
+      interval: 1,
+      labelFontSize: "14",
+      titleFontSize: "14",
       title: "Part Name",
       reversed: true,
     },
     axisY: {
       title: "Quantity Available",
+      labelFontSize: "14",
+      titleFontSize: "14",
       includeZero: true,
       labelFormatter: addSymbols
     },
@@ -92,10 +101,15 @@ export function InventoryDisplay({part_type}){
       dataPoints: dataPoints,
     }],
   }
+  if(part_type === 'grip'){ //hacky >:)
+    options.height = "1000";
+  }
+
+  let style={"height": String(900 * (dataPoints.length + 1))}
 
   return (
-    <div className="InventoryDisplay">
-      <CanvasJSChart options = {options}
+    <div className="InventoryDisplay" style={style}>
+      <CanvasJSChart style={style} options={options}
       /* onRef={ref => this.chart = ref} */
       />
     {/*You can get reference to the chart instance as shown above using onRef. This allows you to access all chart properties and methods*/}

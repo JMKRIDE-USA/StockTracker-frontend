@@ -12,15 +12,17 @@ export function PartsInventoryPage() {
       <p>
         JMKRIDE Stock Parts Inventory
       </p>
-      {
-        ALL_PART_TYPES.map(
-          (part_type) => <InventoryDisplay
-                          className="InventoryDisplay"
-                          part_type={part_type}
-                          key={part_type}
-                         />
-        )
-      }
+      <div className="AllInventoryDisplays">
+        {
+          ALL_PART_TYPES.map(
+            (part_type) => <InventoryDisplay
+                            className="InventoryDisplay"
+                            part_type={part_type}
+                            key={part_type}
+                           />
+          )
+        }
+      </div>
     </div>
   );
 }

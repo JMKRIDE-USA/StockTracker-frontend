@@ -12,6 +12,7 @@ class Part {
 
 class Completeset {
   constructor(row_data){
+    this.id = row_data[0];
     this.filename = row_data[1];
     this.name = row_data[2];
     this.active = row_data[3] === "1";

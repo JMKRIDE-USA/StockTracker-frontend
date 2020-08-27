@@ -132,7 +132,7 @@ export function CompletesetsInventoryPage() {
       </p>
     { Object.keys(all_completesets).map(
       (id) => <CompletesetInventoryEntry
-               completeset_id={id}
+               completeset_id={all_completesets[id].id}
                completeset={all_completesets[id]}
                processed_parts={processed_parts}
                key={id}

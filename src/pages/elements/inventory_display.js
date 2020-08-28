@@ -48,7 +48,6 @@ export function InventoryDisplay({part_type}){
     </h1>
   }
 
-  console.log("inventory_data:", inventory.data);
   let processed_parts;
   let dataPoints = [];
   if(parts.data){

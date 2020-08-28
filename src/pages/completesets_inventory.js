@@ -47,27 +47,10 @@ function CompletesetInventoryEntry({completeset_id, completeset, processed_parts
     }
   }
 
-  let image_url;
-  let image_request_string = "completesets/actions/fetch-image?filename=" + String(completeset.filename);
-  useQuery(
-    image_request_string,
-    () => fetch(
-      server_url + api_path + image_request_string,
-      {method: 'GET'},
-    ).then(res=>res.blob()
-    ).then(image => {
-      image_url = URL.createObjectURL(image);
-    })
-  );
-
   return (
     <div className="Form">
       <div className="FormBox">
         <div className="FormRow">
-          {image_url ?
-            <img src={image_url} alt={completeset.filename}/>
-            :<></>
-          }
           <p className="RowFormTitle">Complete Set: {completeset.name}</p>
         </div>
         <div className="FormRow">

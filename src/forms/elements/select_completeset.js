@@ -53,7 +53,7 @@ export function SelectCompletesetFormElement({ completesetIDRef, label}){
     }
     let processed_completesets_array  = []
     Object.keys(processed_completesets).forEach(function(key) {
-      processed_completesets_array.push({id: key, ...processed_completesets[key]});
+      processed_completesets_array.push(processed_completesets[key]);
     });
     return processed_completesets_array.map(
       (completeset) => <option value={completeset.name} key={completeset.name}>{completeset.name}</option>

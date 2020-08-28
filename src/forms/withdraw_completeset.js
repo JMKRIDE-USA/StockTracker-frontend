@@ -57,7 +57,6 @@ export function WithdrawCompletesetForm() {
       document.getElementById("withdraw_completeset").reset();
     }
   }
-  console.log("selected:", completesetIDRef.current);
 
   return (
     <div className="Form">

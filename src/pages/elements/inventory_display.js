@@ -29,6 +29,7 @@ export function InventoryDisplay({part_type}){
     ).then(res => res.json())
   );
 
+
   if(parts.loading){
     return <h1>Loading {part_type} Parts...</h1>
   }
@@ -47,15 +48,21 @@ export function InventoryDisplay({part_type}){
     </h1>
   }
 
+  console.log("inventory_data:", inventory.data);
   let processed_parts;
   let dataPoints = [];
   if(parts.data){
     processed_parts = processDBData(parts.data, DATA_TYPE.PART);
     if(inventory.data){
       Object.keys(processed_parts).forEach(function(id) {
-        dataPoints.push({
-          y: inventory.data[id], label: processed_parts[id].name, color: processed_parts[id].color
-        });
+        let part = processed_parts[id-1];
+        if(part){
+          console.log("Looking at:", part.id);
+          console.log("Inventory:", inventory.data[part.id]);
+          dataPoints.push({
+            y: inventory.data[part.id], label: part.name, color: part.color
+          });
+        }
       });
     }
   }

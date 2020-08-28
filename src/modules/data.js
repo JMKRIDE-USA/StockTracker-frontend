@@ -2,11 +2,12 @@ import { PART_TYPE_FROM_VALUE, DATA_TYPE } from "../constants.js";
 
 class Part {
   constructor(row_data){
-    this.type = PART_TYPE_FROM_VALUE[row_data[0]]
-    this.name = row_data[1]
-    this.active = row_data[2] === "1";
-    this.created_at = row_data[3]
-    this.color = row_data[4]
+    this.id = row_data[0]
+    this.type = PART_TYPE_FROM_VALUE[row_data[1]]
+    this.name = row_data[2]
+    this.active = row_data[3] === "1";
+    this.created_at = row_data[4]
+    this.color = row_data[5]
   }
 }
 
@@ -64,7 +65,7 @@ export function getDBDataByName(name, db_data){
   let result;
   Object.keys(db_data).forEach(function(key){
     if(db_data[key].name === name){
-      result = {...db_data[key], id: key};
+      result = db_data[key];
     }
   });
   return(result);

@@ -56,8 +56,6 @@ export function InventoryDisplay({part_type}){
       Object.keys(processed_parts).forEach(function(id) {
         let part = processed_parts[id-1];
         if(part){
-          console.log("Looking at:", part.id);
-          console.log("Inventory:", inventory.data[part.id]);
           dataPoints.push({
             y: inventory.data[part.id], label: part.name, color: part.color
           });

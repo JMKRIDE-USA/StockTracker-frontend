@@ -48,9 +48,11 @@ export function processDBData(db_data, data_type) {
   let processed_data = {}
   for (var key of Object.keys(db_data)){
     if(data_type === DATA_TYPE.PART){
-      processed_data[key] = new Part(db_data[key]);
+      let part = new Part(db_data[key]);
+      processed_data[part.id] = part;
     } else if(data_type === DATA_TYPE.COMPLETE_SET){
-      processed_data[key] = new Completeset(db_data[key]);
+      let completeset = new Completeset(db_data[key]);
+      processed_data[completeset.id] = completeset;
     } else {
       console.log("DATA_TYPE not provided or not recognized.");
     }

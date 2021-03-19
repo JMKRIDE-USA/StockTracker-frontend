@@ -36,6 +36,7 @@ function CompletesetInventoryEntry({completeset_id, completeset, processed_parts
     }
   );
   let cs_desc = "";
+  console.log(completeset.name, id_quantities);
   if(processed_parts){
     Object.keys(id_quantities).forEach(
       function(id) {

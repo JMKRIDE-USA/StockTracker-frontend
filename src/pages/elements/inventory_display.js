@@ -54,7 +54,7 @@ export function InventoryDisplay({part_type}){
     processed_parts = processDBData(parts.data, DATA_TYPE.PART);
     if(inventory.data){
       Object.keys(processed_parts).forEach(function(id) {
-        let part = processed_parts[id-1];
+        let part = processed_parts[id];
         if(part){
           dataPoints.push({
             y: inventory.data[part.id], label: part.name, color: part.color
@@ -106,10 +106,16 @@ export function InventoryDisplay({part_type}){
     }],
   }
   if(part_type === 'grip'){ //hacky >:)
-    options.height = "1000";
+    options.height = "1200";
+  }
+  if(part_type === 'apparel'){ //hacky >:)
+    options.height = "900";
+  }
+  if(part_type === 'other'){ //hacky >:)
+    options.height = "400";
   }
 
-  let style={"height": String(900 * (dataPoints.length + 1))}
+  let style={"height": String(1000 * (dataPoints.length + 1))}
 
   return (
     <div className="InventoryDisplay" style={style}>

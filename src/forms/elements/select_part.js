@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 
 import { server_url, api_path, DATA_TYPE } from '../../constants.js';
@@ -53,7 +53,7 @@ export function SelectPartFormElement({ partIDRef, partType, label}){
 
   function getPartOptions(){
     if(!processed_parts){
-      return <></>
+      return <Fragment></Fragment>
     }
     let processed_parts_array  = []
     Object.keys(processed_parts).forEach(function(key) {

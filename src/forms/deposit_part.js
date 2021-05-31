@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { Fragment, useState, useRef } from 'react';
 import { useMutation, queryCache } from 'react-query';
 
 import { server_url, api_path } from "../constants.js";
@@ -70,7 +70,7 @@ export function DepositPartForm() {
               ? resultWasError
                 ? <p className="ResultErrorReport">{ result }</p>
                 : <p className="ResultSuccessReport">{ result }</p>
-              : <></>
+              : <Fragment></Fragment>
             }
           </div>
         </div>

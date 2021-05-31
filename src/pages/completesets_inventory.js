@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { useQuery } from 'react-query';
 
 import { server_url, api_path, DATA_TYPE } from "../constants.js";
@@ -57,7 +57,7 @@ function CompletesetInventoryEntry({completeset_id, completeset, processed_parts
         <div className="FormRow">
           {(cs_desc !== "") ?
             <p className="CompletesetInfo">Description: {cs_desc}.</p>
-            :<></>
+            :<Fragment></Fragment>
           }
         </div>
         <div className="FormRow">

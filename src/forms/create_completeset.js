@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { Fragment, useState, useRef } from 'react';
 import { useMutation, queryCache } from 'react-query';
 
 import { server_url, api_path, PART_TYPE } from "../constants.js";
@@ -105,11 +105,10 @@ export function CreateCompletesetForm(){
         <div className="FormRow">
           <p className="RowFormTitle"> Create Complete Set: </p>
           <div className="ResultReport">
-            { result
-              ? resultWasError
+            { result ? resultWasError
                 ? <p className="ResultErrorReport">{ result }</p>
                 : <p className="ResultSuccessReport">{ result }</p>
-              : <></>
+              : <Fragment></Fragment>
             }
           </div>
         </div>

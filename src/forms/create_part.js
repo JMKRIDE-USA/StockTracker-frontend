@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { useMutation, queryCache } from 'react-query';
 
 import { server_url, api_path, COLOR, ALL_COLORS } from "../constants.js";
@@ -76,7 +76,7 @@ export function CreatePartForm(){
               ? resultWasError
                 ? <p className="ResultErrorReport">{ result }</p>
                 : <p className="ResultSuccessReport">{ result }</p>
-              : <></>
+              : <Fragment></Fragment>
             }
           </div>
         </div>

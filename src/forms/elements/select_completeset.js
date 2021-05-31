@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 
 import { server_url, api_path, DATA_TYPE } from '../../constants.js';
@@ -49,7 +49,7 @@ export function SelectCompletesetFormElement({ completesetIDRef, label}){
 
   function getCompletesetOptions(){
     if(!processed_completesets){
-      return <></>
+      return <Fragment></Fragment>
     }
     let processed_completesets_array  = []
     Object.keys(processed_completesets).forEach(function(key) {

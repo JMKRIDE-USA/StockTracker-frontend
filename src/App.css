@@ -1,117 +1,96 @@
 .App {
   text-align: center;
-}
-
-.JMKRIDE-logo {
-  height: 10vmin;
-  pointer-events: none;
-  margin-top: 50px;
-  padding-bottom: 50px;
-}
-
-.topbar-logo {
-  padding-right: 100vh;
-  height: 30vh;
-}
-
-.MainPage {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
+  height: 100vh;
+  width: 100vw;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+
+.header {
+  height: 70px;
+  background-color: black;
+}
+.header-dropdown {
+  background-color: black;
+}
+.navbar-toggler {
+  margin-right: 20px;
+  border: 2px solid white;
+}
+
+.header-logo {
+  height: 50px;
+  padding-left: 10px;
+  padding-right: 40px;
+}
+.navbar-collapse {
+  justify-content: space-between;
+  padding-right: 40px;
+}
+.nav-link {
+  color: white;
+}
+.nav-link:hover {
+  color: #00a0db;
+}
+.account-icon {
+  color: #00a0db;
+}
+.account-icon:hover {
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-.ServerStatusMessage {
-  margin-top: -30px;
-  font-size: 25px;
-}
-
-.Form {
-  padding: 20px;
-}
-
-.FormBox {
-  border: 4px solid black;
-  padding: 20px;
+.page {
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.2);
-  font-size: calc(8px + 2vmin);
-}
-
-.FormRow {
+  width: 100%;
+  background-color: #00a0db;
+  flex-direction: column;
   display: flex;
-  flex-direction: row;
+  align-items: center;
 }
-
-.FormRowTitle {
-  padding-right: 20px;
-}
-.FormTitle {
-  font-style: bold;
-  padding-right: 20px;
-}
-
-.RowFormContent {
-  font-size: calc(3px + 2vmin);
-  color: lightgray;
-}
-
-.RowFormElement {
-  padding-right: 10px;
-}
-
-.ResultReport {
-  padding-left: 60px;
-}
-.ResultErrorReport {
-  color: red;
-}
-.ResultSuccessReport {
-  color: #3df540;
-}
-
-.InventoryDisplay {
-  width:1200px;
-  border-width: 1px;
-  border-color: white;
+.page-card {
+  background-color: white;
+  max-width: 500px;
+  min-width: 150px;
+  margin: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-radius: 10px;
   border-style: solid;
-  margin: 10px;
-  flex: 1;
+  border-width: 3px;
+  border-color: black;
 }
-.AllInventoryDisplays {
-  padding: 10px;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -moz-flex;
-  display: -webkit-flex;
+.page-card > * {
+  margin: 10px;
+}
+
+.sign-in-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 7px;
+}
+
+.sign-in-form > * {
+  margin: 2px;
+}
+
+.btn-primary {
+  margin-top: 10px;
+  background-color: #00a0db;
+  border-color: #00a0db;
+}
+
+.flex-align-center {
+  align-self: center;
+}
+
+.flex-column {
   display: flex;
   flex-direction: column;
 }
 
-label {
-  margin-bottom: 10px;
-  margin-right: 20px;
-}
-
-input {
-  height: 50px;
-  margin-left: 20px;
-}
-
-select {
-  height: 50px;
-  margin-left: 20px;
-}
-
-.CompletesetInfo {
-  font-size: 20px;
+.begoodpeople {
+  font-size: 40px;
+  color: black;
 }

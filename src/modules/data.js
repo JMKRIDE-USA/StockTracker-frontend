@@ -1,78 +1,65 @@
-import { PART_TYPE_FROM_VALUE, DATA_TYPE } from "../constants.js";
+import { useQuery } from 'react-query';
+import { useSelector } from 'react-redux';
 
-class Part {
-  constructor(row_data){
-    this.id = row_data[0]
-    this.type = PART_TYPE_FROM_VALUE[row_data[1]]
-    this.name = row_data[2]
-    this.active = row_data[3] === "1";
-    this.created_at = row_data[4]
-    this.color = row_data[5]
-  }
-}
+import { QueryClient } from 'react-query';
 
-class Completeset {
-  constructor(row_data){
-    this.id = row_data[0];
-    this.filename = row_data[1];
-    this.name = row_data[2];
-    this.active = row_data[3] === "1";
-    this.created_at = row_data[4];
-    this.awheel1 = row_data[5];
-    this.awheel2 = row_data[6];
-    this.atruck = row_data[7];
-    this.adeck = row_data[8];
-    this.agrip = row_data[9];
-    this.bwheel1 = row_data[10];
-    this.bwheel2 = row_data[11];
-    this.btruck = row_data[12];
-    this.bdeck = row_data[13];
-    this.bgrip = row_data[14];
-    this.all_parts = [
-      this.awheel1,
-      this.awheel2,
-      this.atruck,
-      this.adeck,
-      this.agrip,
-      this.bwheel1,
-      this.bwheel2,
-      this.btruck,
-      this.bdeck,
-      this.bgrip,
-    ];
-  }
-}
+import { selectAuthHeader } from '../redux/authSlice.js';
+import config from '../config.js';
 
+export const queryClient = new QueryClient();
 
-export function processDBData(db_data, data_type) {
-  let processed_data = {}
-  for (var key of Object.keys(db_data)){
-    if(data_type === DATA_TYPE.PART){
-      let part = new Part(db_data[key]);
-      processed_data[part.id] = part;
-    } else if(data_type === DATA_TYPE.COMPLETE_SET){
-      let completeset = new Completeset(db_data[key]);
-      processed_data[completeset.id] = completeset;
-    } else {
-      console.log("DATA_TYPE not provided or not recognized.");
+export function useGetQuery(endpoint, key, auth = true) {
+  const header = useSelector(selectAuthHeader);
+  try {
+    const query = useQuery(
+      [key, endpoint], // caching invalidations from either
+      () => fetch(
+        config.backend_url + endpoint,
+        {
+          method: "GET",
+          headers: auth ? header : [],
+        }
+      ).then(res => res.json()),
+    )
+    if (query.error) {
+      console.log(
+        "[!] Error fetching", key, "endpoint \"", endpoint, "\":", query.error
+      );
+      return query;
     }
-  }
-  return processed_data;
-}
-
-/*
- * db_data is processed part data
- */
-export function getDBDataByName(name, db_data){
-  let result;
-  Object.keys(db_data).forEach(function(key){
-    if(db_data[key].name === name){
-      result = db_data[key];
+    if (query.data && query.data.error){
+      console.log(
+        "[!] Error fetching", key, "endpoint \"", endpoint, "\":", query.error
+      );
+      return query;
     }
-  });
-  return(result);
+      return query;
+  } catch (error) {
+    console.log("[!] Error fetching", key, "endpoint \"", endpoint, "\":", error);
+    return { data: {}, error: error, status: 'error'}
+  }
 }
 
-export function getCompletesetDescription(completesetID){
-  return "Description"
+export function createMutationCall(mutationFn, mutationError, mutationVerb) {
+  return async (to_submit) => {
+    let result;
+    try {
+      result = await mutationFn({to_submit})
+    } catch (error) {
+      console.log("[!] Error", mutationVerb, ":", error);
+      return false;
+    }
+    if (mutationError){
+      console.log("[!] Error", mutationVerb, ":", mutationError);
+      return false;
+    }
+    if (result && result.error){
+      console.log("[!] Error", mutationVerb, ":", result.error);
+      return false;
+    }
+    if (result) {
+      return result;
+    }
+    return false;
+  }
 }

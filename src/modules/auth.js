@@ -10,7 +10,15 @@ import {
   fetchAuthRequest,
 } from '../redux/authSlice.js'
 import { getDateAfter } from './date.js';
-import { queryClient } from './data.js';
+import { useGetQuery, queryClient } from './data.js';
+
+
+function useGetAuthQuery(endpoint) {
+  return useGetQuery(
+    endpoint,
+    'auth', //global key for this file
+  )
+}
 
 export function useCreateAccount(){
 
@@ -100,6 +108,34 @@ export function useLogin(){
     return false
   };
 }
+
+export function useGetSessions() {
+  return useGetAuthQuery("auth/sessions/self");
+}
+
+export function useDisableSession(){
+  const header = useSelector(selectAuthHeader);
+
+  const { mutateAsync, error } = useMutation(
+    ({to_submit}) => fetch(
+      config.backend_url + "auth/sessions/id/" + to_submit.session_id,
+      {
+        method: "DELETE",
+        headers: header,
+      }
+    ),
+    {
+      onSuccess: async () => {
+        queryClient.invalidateQueries('auth');
+      },
+    }
+  );
+
+  return createMutationCall(
+    mutateAsync, error, "disabling session",
+  )
+}
+
 
 export function useResetPasswordWithPassword(){
   const header = useSelector(selectAuthHeader);

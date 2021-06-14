@@ -50,6 +50,7 @@
 }
 .page-card {
   background-color: white;
+  justify-content: center;
   max-width: 500px;
   min-width: 150px;
   margin: 20px;
@@ -84,6 +85,9 @@
 .flex-align-center {
   align-self: center;
 }
+.flex-align-start {
+  align-self: flex-start;
+}
 
 .flex-column {
   display: flex;
@@ -93,4 +97,33 @@
 .begoodpeople {
   font-size: 40px;
   color: black;
+}
+
+.info-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.info-list-item {
+  display: flex;
+  flex-direction: row;
+}
+.info-list-item > .key {
+  font-weight: bold;
+  margin-right: 10px;
+}
+.session-list {
+  display: flex;
+  flex-direction: column;
+}
+.session-item {
+  margin-top: 15px;
+  border-top: 2px solid black;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.session-item:first-child {
+  margin-top: 0px;
+  border-top: 0px solid black;
 }

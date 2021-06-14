@@ -15,7 +15,7 @@ import authReducer from './authSlice.js';
 import asyncListenerMiddleware from './asyncListenerMiddleware.js';
 import authALM from './authALM.js';
 
-const persistConfig = {key: 'root', storage, whitelist: ['auth']}; 
+const persistConfig = {key: 'root', storage: storage, whitelist: ['auth'], timeout: 2, debug: true}; 
 const rootReducer = combineReducers({
   auth: authReducer,
 });

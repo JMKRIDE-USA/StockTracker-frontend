@@ -5,16 +5,13 @@ import { AUTH_STATE } from '../constants.js';
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    auth_permissions: AUTH_STATE.NONE,
+    auth_state: AUTH_STATE.NONE,
     user_id: undefined,
     access_token: undefined,
     refresh_token: undefined,
     expires_at: undefined,
   },
   reducers: {
-    setUserName: (state, action) => {
-      state.user_name = action.payload;
-    },
     setUserId: (state, action) => {
       state.user_id = action.payload;
     },
@@ -23,11 +20,18 @@ const authSlice = createSlice({
       state.refresh_token = action.payload.refresh_token;
       state.expires_at = action.payload.expires_at;
     },
-    setAuthPermissions: (state, action) => {
-      state.auth_permissions = action.payload;
+    setAuthState: (state, action) => {
+      state.auth_state = action.payload;
+    },
+    setUserInfo: (state, action) => {
+      state.user_email = action.payload.email;
+      state.user_firstname = action.payload.firstName;
+      state.user_lastname = action.payload.lastName;
+      state.user_fullname = action.payload.fullName;
+      state.created_at = action.payload.createdAt;
     },
     resetAuth: state => {
-      state.auth_permissions = AUTH_STATE.NONE;
+      state.auth_state = AUTH_STATE.NONE;
       state.user_id = undefined;
       state.access_token = undefined;
       state.refresh_token = undefined;
@@ -43,15 +47,23 @@ export const {
   setUserName,
   setUserId,
   setAuthTokens,
-  setAuthPermissions,
+  setAuthState,
+  setUserInfo,
   resetAuth,
   fetchAuthRequest,
   fetchUserIdRequest,
   verifyAuthRequest,
 } = authSlice.actions;
 
-export const selectAuthPermissions = state => state.auth.auth_permissions;
+export const selectAuthState = state => state.auth.auth_state;
 export const selectUserId = state => state.auth.user_id;
+export const selectUserInfo = state => ({
+  email: state.auth.user_email,
+  firstName: state.auth.user_firstname,
+  lastName: state.auth.user_lastname,
+  fullName: state.auth.user_fullname,
+  createdAt: state.auth.created_at,
+})
 export const selectAuthExpiration = state => state.auth.expires_at;
 export const selectAccessToken = state => state.auth.access_token;
 export const selectRefreshToken = state => state.auth.refresh_token;
@@ -60,6 +72,6 @@ export const selectAuthHeader = state => {
   return {"Authorization": "Bearer " + state.auth.access_token}
 }
 
-export const selectIsAdmin = state => state.auth.auth_permissions === AUTH_STATE.ADMIN;
+export const selectIsAdmin = state => state.auth.auth_state === AUTH_STATE.ADMIN;
 
 export default authSlice.reducer;

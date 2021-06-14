@@ -7,14 +7,16 @@ import {
   selectAuthExpiration,
   selectRefreshToken,
   selectUserId,
-  setAuthPermissions,
+  setAuthState,
   setUserId,
+  setUserInfo,
   setAuthTokens,
   resetAuth,
 } from './authSlice.js';
 import config from '../config.js';
 import { getDateAfter, hasExpired, needsRefresh } from '../modules/date.js';
 import { queryClient } from '../modules/data.js';
+import { permissionLevelToAuthState } from '../constants.js';
 
 
 const AllALMs = {
@@ -48,7 +50,10 @@ const AllALMs = {
         return res.json();
       }).then(res => {
         if (res){
-          dispatch(setAuthPermissions(res.permissionLevel));
+          dispatch(setAuthState(
+            permissionLevelToAuthState(res.permissionLevel))
+          );
+          dispatch(setUserInfo(res));
         } else {
           dispatch(resetAuth());
         }

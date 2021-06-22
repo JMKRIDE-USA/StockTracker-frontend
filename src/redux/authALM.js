@@ -13,6 +13,12 @@ import {
   setAuthTokens,
   resetAuth,
 } from './authSlice.js';
+import {
+  selectInventoryId,
+  selectCategorySetId,
+  setInventoryId,
+  setCategorySetId,
+} from './inventorySlice.js';
 import config from '../config.js';
 import { getDateAfter, hasExpired, needsRefresh } from '../modules/date.js';
 import { queryClient } from '../modules/data.js';
@@ -22,6 +28,10 @@ import { permissionLevelToAuthState } from '../constants.js';
 const AllALMs = {
   [fetchAuthRequest]: (action, dispatch, state) => {
     const accessToken = selectAccessToken(state);
+     
+    const inventoryId = selectInventoryId(state);
+    const categorySetId = selectCategorySetId(state);
+     
     if (! accessToken) {
       console.log('User is not logged in. Resetting auth.');
       dispatch(resetAuth());
@@ -54,6 +64,12 @@ const AllALMs = {
             permissionLevelToAuthState(res.permissionLevel))
           );
           dispatch(setUserInfo(res));
+          if( !inventoryId) {
+            dispatch(setInventoryId(res.defaultInventory));
+          }
+          if( !categorySetId) {
+            dispatch(setCategorySetId(res.defaultCategorySet));
+          }
         } else {
           dispatch(resetAuth());
         }

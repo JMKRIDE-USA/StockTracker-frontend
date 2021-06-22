@@ -8,7 +8,7 @@ import config from '../config.js';
 
 export const queryClient = new QueryClient();
 
-export function useGetQuery(endpoint, key, auth = true) {
+export function useGetQuery(endpoint, key, {auth = true} = {}) {
   const header = useSelector(selectAuthHeader);
   try {
     const query = useQuery(

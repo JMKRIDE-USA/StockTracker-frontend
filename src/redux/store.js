@@ -11,6 +11,7 @@ import {
 import storage from 'redux-persist/lib/storage';
 
 import authReducer from './authSlice.js';
+import inventoryReducer from './inventorySlice.js';
 
 import asyncListenerMiddleware from './asyncListenerMiddleware.js';
 import authALM from './authALM.js';
@@ -18,6 +19,7 @@ import authALM from './authALM.js';
 const persistConfig = {key: 'root', storage: storage, whitelist: ['auth'], timeout: 2, debug: true}; 
 const rootReducer = combineReducers({
   auth: authReducer,
+  inventory: inventoryReducer,
 });
 
 export default configureStore({

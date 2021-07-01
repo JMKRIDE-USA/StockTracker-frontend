@@ -46,7 +46,7 @@ function SessionsList() {
       { sessionsQuery.data.map((item, index) =>
         <div key={index} className="session-item">
           <InfoListFromObject data={sessionsData[index]}/>
-          <button onClick={disableSessionOnClick({id: item.id, current: item.current})}>
+          <button className="btn btn-secondary" onClick={disableSessionOnClick({id: item.id, current: item.current})}>
             {item.current ? "Log Out" : "Delete" }
           </button>
         </div>

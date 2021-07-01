@@ -116,7 +116,7 @@ export function useGetSessions() {
 export function useDisableSession(){
   const header = useSelector(selectAuthHeader);
 
-  const { mutateAsync, error } = useMutation(
+  const mutationFn  = useMutation(
     ({to_submit}) => fetch(
       config.backend_url + "auth/sessions/id/" + to_submit.session_id,
       {
@@ -131,15 +131,13 @@ export function useDisableSession(){
     }
   );
 
-  return createMutationCall(
-    mutateAsync, error, "disabling session",
-  )
+  return createMutationCall(mutationFn, "disabling session");
 }
 
 
 export function useResetPasswordWithPassword(){
   const header = useSelector(selectAuthHeader);
-  const { mutateAsync, error } = useMutation(({to_submit}) => fetch(
+  const mutationFn = useMutation(({to_submit}) => fetch(
     config.backend_url + "auth/reset_password/password",
     {
       method: "POST",
@@ -150,7 +148,7 @@ export function useResetPasswordWithPassword(){
       body: JSON.stringify(to_submit),
     }).then(res => res.json()),
   );
-  return createMutationCall(mutateAsync, error, "resetting password with password");
+  return createMutationCall(mutationFn, "resetting password with password");
 }
 
 export function useAdminResetUserPassword(){

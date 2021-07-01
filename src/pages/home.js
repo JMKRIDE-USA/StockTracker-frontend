@@ -1,16 +1,9 @@
 import React from 'react';
 
-import { useGetAllCategories } from '../modules/inventory.js';
-import { CategoryDisplay } from '../components/inventory-display.js';
 
-function CategoryCard({categoryId, categoryName}) {
-  return (
-    <div className="chart-card bar-chart-card">
-      <h3>{categoryName} Inventory</h3>
-      <CategoryDisplay categoryId={categoryId}/>
-    </div>
-  )
-}
+import { useGetAllCategories } from '../modules/inventory.js';
+import { CategoryDisplayCard } from '../components/inventory-display.js';
+import { CategorySetSelector } from '../components/selectors.js';
 
 function AllCategories() {
   const categoryQuery = useGetAllCategories()
@@ -27,28 +20,50 @@ function AllCategories() {
       </div>
     );
   }
-  return categoryQuery.data["result"].map((category, index) => (
+  let sortedCategories = categoryQuery.data.result;
+  sortedCategories.sort((a,b) => (
+    (a.sortIndex < b.sortIndex) ? -1
+    : ((a.sortIndex > b.sortIndex) ? 1 : 0)
+  ));
+  return sortedCategories.map((category, index) => (
     <div className="bar-chart-supercard" key={index}>
-      <CategoryCard categoryId={category._id} categoryName={category.name}/>
+      <CategoryDisplayCard
+        categoryId={category._id}
+        categoryName={category.name}
+        length={category.length}
+      />
     </div>
   ));
 }
 
+function TitleCard() {
+  return (
+    <div className="page-card">
+      <h1>
+        JMKRIDE StockTracker v2.0
+      </h1>
+      <div className="begoodpeople">
+        Be Good People.
+      </div>
+      <div className="flex-column">
+        <div className="flex-row flex-centered">
+          <div className="text-bold">Current Category Set:</div>
+          <CategorySetSelector/>
+          <button className="btn btn-secondary">
+            Edit
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function Home() {
   return (
-    <body>
-      <div className="page category-page">
-        <div className="page-card">
-          <h1>
-            JMKRIDE StockTracker v2.0
-          </h1>
-          <div className="begoodpeople">
-            Be Good People.
-          </div>
-        </div>
-        <AllCategories/>
-      </div>
-    </body>
+    <div className="page">
+      <TitleCard/>
+      <AllCategories/>
+    </div>
   )
 }
 

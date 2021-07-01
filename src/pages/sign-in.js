@@ -32,7 +32,7 @@ function SignInForm() {
         value={password}
         placeholder="Password"
        />
-      <button className="btn btn-primary flex-align-center">Sign In</button>
+      <button className="btn btn-primary flex-align-center sign-in-button">Sign In</button>
     </form>
   );
 }

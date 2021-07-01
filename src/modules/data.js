@@ -1,3 +1,5 @@
+import React from 'react';
+
 import { useQuery } from 'react-query';
 import { useSelector } from 'react-redux';
 
@@ -8,7 +10,8 @@ import config from '../config.js';
 
 export const queryClient = new QueryClient();
 
-export function useGetQuery(endpoint, key, {auth = true} = {}) {
+
+export function useGetQuery(endpoint, key, options = {}) {
   const header = useSelector(selectAuthHeader);
   try {
     const query = useQuery(
@@ -17,9 +20,10 @@ export function useGetQuery(endpoint, key, {auth = true} = {}) {
         config.backend_url + endpoint,
         {
           method: "GET",
-          headers: auth ? header : [],
-        }
+          headers: header,
+        },
       ).then(res => res.json()),
+      options,
     )
     if (query.error) {
       console.log(
@@ -40,26 +44,68 @@ export function useGetQuery(endpoint, key, {auth = true} = {}) {
   }
 }
 
-export function createMutationCall(mutationFn, mutationError, mutationVerb) {
+export function createMutationCall(mutationFn, mutationVerb) {
+  const { mutateAsync, error, status } = mutationFn;
   return async (to_submit) => {
     let result;
     try {
-      result = await mutationFn({to_submit})
+      result = await mutateAsync({to_submit})
     } catch (error) {
       console.log("[!] Error", mutationVerb, ":", error);
-      return false;
+      return {result: false, status};
     }
-    if (mutationError){
-      console.log("[!] Error", mutationVerb, ":", mutationError);
-      return false;
+    if (error){
+      console.log("[!] Error", mutationVerb, ":", error);
+      return {result: false, status};
     }
-    if (result && result.error){
-      console.log("[!] Error", mutationVerb, ":", result.error);
-      return false;
+    if (!result || result.error || !result.ok){
+      console.log("[!] Error", mutationVerb, ":", result.status, result?.error);
+      return {result: false, status};
     }
     if (result) {
-      return result;
+      return {result, status};
     }
-    return false;
+    return {result: false, status};
   }
+}
+
+export function onQuerySuccess(query, thenFn, {name = "Resource", pageCard = false} = {}) {
+  if(query.status === 'loading') {
+    return (
+      <div className={"query-loading" + pageCard ? "page-card" : ""}>
+        {name} loading...
+      </div>
+    )
+  }
+  if(
+    query.status !== 'success' || 
+    !Object.hasOwnProperty.call(query.data, 'result')
+  ) {
+    return (
+      <div className={"query-error" + pageCard ? "page-card" : ""}>
+        <h3 className="error-text">Error loading {name}!</h3>
+        { JSON.stringify(query.error) }
+      </div>
+    );
+  }
+  return thenFn(query.data);
+}
+
+export function QueryLoader({query, propName, children, ...props}) {
+  const propNoun = propName.charAt(0).toUpperCase() + propName.slice(1);
+  return onQuerySuccess(query, (data) => {
+    if(!data.result) {
+      return (
+        <div className="page-card">
+          <h3>{propNoun} Not Found.</h3>
+        </div>
+      );
+    }
+    return React.Children.map(children, child => {
+      if (React.isValidElement(child)) {
+        return React.cloneElement(child, {[propName]: data.result, ...props})
+      }
+      return child;
+    });
+  }, {name: propNoun});
 }

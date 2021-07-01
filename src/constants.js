@@ -34,13 +34,20 @@ export const colorNameToHex = (color) => (
     Orange: "#f26522",
     Lavender: "#a98ec3",
     Green: "#9ccb3b",
-    Marine: "#0083ca",
+    Marine: "#276cdb",
     Purple: "#ac519f",
     Mint: "#8fd0b8",
-    Chrome: "#afafaf",
+    Chrome: "#88898a",
     Silver: "#c1c1c1",
     Gold: "#ffc20e",
     Sakura: "#efbedf",
     Brown: "#977348",
   }[color]
+);
+
+export const colorIsDark = color => (
+  [
+    "Black", "Cyan", "Pink", "Orange", "Marine",
+    "Purple", "Green", "Red", "Chrome",
+  ].includes(color)
 );

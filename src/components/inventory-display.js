@@ -1,85 +1,33 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
+
+import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
 
 import { Bar } from 'react-chartjs-2';
+import { HiMenuAlt1, HiMenuAlt3 } from 'react-icons/hi';
 
+import { QueryLoader } from '../modules/data.js';
 import { colorNameToHex } from '../constants.js';
 import { useGetPartsByCategory } from '../modules/inventory.js';
+import { PartInfoAndControls } from './parts.js';
 
-// import CanvasJSReact from "../external_dependencies/canvasjs.react.js";
-/*
-const CanvasJS = CanvasJSReact.CanvasJS;
-const CanvasJSChart = CanvasJSReact.CanvasJSChart;
-
-  let data = partsQuery.data.result.map(part => (
-    {label: part.name, y: part.quantity, color: colorNameToHex(part.color)}
-  ));
-  let options = {
-    animationEnabled: true,
-    data: [{type: "bar", dataPoints: data}],
+export function PartsDisplay({parts, setSelectedPart}) {
+  const getElementAtEvent = element => {
+    if(element.length) {
+      setSelectedPart(parts[element[0]?.index]);
+    }
   }
-  return <CanvasJSChart options={options}/>
-  */
-  /*
-  */
-  /*
-  useEffect(() => { 
-    let ctx = document.getElementById(canvas_id);
-    console.log("running");
-    let mychart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: allParts.map(part=>part.name),
-        datasets: [{
-          data: allParts.map(part=>part.quantity),
-          backgroundColor: allParts.map(part=>part.color),
-        }],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {legend: {display: false}},
-        scales: {
-          x: {grid: {offset: true}},
-          yAxes: [{ticks: {beginAtZero: true}}],
-        }
-      },
-    });
-    ReactDOM.render(mychart, document.getElementById(canvas_id));
-  });
-  */
-
-export function CategoryDisplay({categoryId}) {
-  const partsQuery = useGetPartsByCategory(categoryId);
-  if (![partsQuery].every((query) => query.status === 'success')) {
-    return (
-      <div> Parts loading... </div>
-    )
-  }
-  if(!Object.hasOwnProperty.call(partsQuery.data, 'result')) {
-    return (
-      <div>
-        <h3 className="error-text">Error loading parts!</h3>
-        { JSON.stringify(partsQuery.data) }
-      </div>
-    );
-  } else if (partsQuery.data.result.length <= 0) {
-    return (
-      <div>
-        <div>No Parts Found...</div>
-      </div>
-    )
-  }
-  //console.log(partsQuery.data);
-  const allParts = partsQuery.data.result;
   return (
     <div className="bar-chart">
       <Bar
         data={{
-          labels: allParts.map(part => part.name),
+          labels: parts.map(part => part.name),
           datasets: [{
-            data: allParts.map(part => part.quantity),
-            backgroundColor: allParts.map(part => part.color),
-            borderColor: allParts.map(() => '#000000'),
+            data: parts.map(part => part.quantity),
+            backgroundColor: parts.map(
+                part => colorNameToHex(part.color)
+            ),
+            borderColor: parts.map(() => '#000000'),
             borderWidth: 1,
             borderRadius: 1,
             barThickness: 'flex',
@@ -89,16 +37,113 @@ export function CategoryDisplay({categoryId}) {
           }]
         }}
         options={{
+          animation: false,
           indexAxis: 'y',
           responsive: true,
-          maintainAspectRatio: true,
+          maintainAspectRatio: false,
           plugins: {legend: {display: false}},
           scales: {
             x: {grid: {offset: true}},
             yAxes: [{ticks: {beginAtZero: true}}],
           }
         }}
+        getElementAtEvent={getElementAtEvent}
       />
     </div>
+  );
+}
+
+const ChartButtons = styled.div`
+  margin-left: 2px;
+  & > button:last-child {
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+`
+const ChartCard = styled.div`
+  background-color: white;
+  justify-content: center;
+  margin: 20px;
+  padding-top: 5px;
+  border-radius: 10px;
+  border-style: solid;
+  border-width: 3px;
+  border-color: black;
+  width: 95vw;
+  max-width: 1000px;
+`
+const ChartTitleRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`
+
+export function PartsDisplayCard(
+  {parts, name, height, buttonFn = () => <div/>, partInfoAndControlsOptions}
+) {
+  const [selectedPart, setSelectedPart] = useState();
+  height = height ? height : Math.max((parts.length * 35), 50) 
+  return (
+    <ChartCard>
+      <ChartTitleRow>
+        <div/>
+        <h3>{name} Inventory</h3>
+        {buttonFn()}
+      </ChartTitleRow>
+      <div className="chart-div" style={{height: height.toString() + "px"}}>
+        <PartsDisplay
+          parts={parts}
+          setSelectedPart={setSelectedPart}
+        />
+      </div>
+      { selectedPart 
+        ? <PartInfoAndControls
+            partId={selectedPart._id}
+            onClose={() => setSelectedPart()}
+            {...partInfoAndControlsOptions}
+          /> 
+        : <div/> 
+      }
+    </ChartCard>
+  )
+}
+
+function CategoryButtons({categoryId, viewButton, editButton}) {
+  const history = useHistory();
+  const viewCategory = useCallback(
+    () => history.push('/category/' + categoryId),
+    [history, categoryId]
+  )
+  const editCategory = useCallback(
+    () => history.push('/category/edit/' + categoryId),
+    [history, categoryId]
+  )
+  return (
+    <ChartButtons>
+      { viewButton ?
+        <button onClick={viewCategory} className="btn btn-secondary">View</button>
+        : ''
+      }
+      { editButton ?
+        <button onClick={editCategory} className="btn btn-secondary">
+          <HiMenuAlt1 size={15}/>
+          <HiMenuAlt3 size={15}/>
+        </button>
+        : ''
+      }
+    </ChartButtons>
+  )
+}
+
+export function CategoryDisplayCard(
+  {categoryId, categoryName, viewButton = true, editButton = true }
+) {
+  const partsQuery = useGetPartsByCategory(categoryId);
+  return (
+    <QueryLoader query={partsQuery} propName={"parts"}>
+      <PartsDisplayCard name={categoryName} buttonFn={() => (
+        <CategoryButtons {...{categoryId, viewButton, editButton}}/>
+      )}/>
+    </QueryLoader>
   );
 }

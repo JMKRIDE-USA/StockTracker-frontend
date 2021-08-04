@@ -1,31 +1,25 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 
-import { useHistory, useParams } from 'react-router-dom';
 import { useDrag, useDrop } from 'react-dnd';
 import styled from 'styled-components';
 import update from 'immutability-helper';
 
-import { QueryLoader } from '../modules/data.js';
-import { LoadingIcon } from '../components/loading.js';
-import {
-  useGetPartsByCategory,
-  useGetCategory,
-  useSetCategoryOrder,
-} from '../modules/inventory.js';
-import { colorNameToHex, colorIsDark } from '../constants.js';
 import { ResultIndicator } from '../components/result.js';
+import { colorNameToHex, colorIsDark } from '../constants.js';
+import { DisableCover } from '../components/common.js';
+import { LoadingIcon } from '../components/loading.js';
 
 
-const PartComponent = styled.div`
+const ItemComponent = styled.div`
   padding: 10px;
   margin: 5px;
   width: 200px;
   border: 2px dotted black;
 `
-function Part({ part, id, index, movePart, persistOrder }) {
+function Item({ item, id, index, movePart, persistOrder }) {
   const ref = useRef(null);
   const [{ handlerId }, drop] = useDrop({
-    accept: 'part',
+    accept: 'item',
     collect(monitor) {
       return {
         handlerId: monitor.getHandlerId(),
@@ -59,7 +53,7 @@ function Part({ part, id, index, movePart, persistOrder }) {
     }
   });
   const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'part',
+    type: 'item',
     item: {index, id},
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
@@ -67,34 +61,21 @@ function Part({ part, id, index, movePart, persistOrder }) {
   }));
   drag(drop(ref));
   return (
-    <PartComponent
+    <ItemComponent
       ref={ref}
       data-handler-id={handlerId}
       style={{
-        color: colorIsDark(part.color) ? "white" : "black",
-        backgroundColor: colorNameToHex(part.color),
+        color: colorIsDark(item.color) ? "white" : "black",
+        backgroundColor: colorNameToHex(item.color),
         opacity: isDragging ? 0.5 : 1,
       }}
     >
-      {part.name}
-    </PartComponent>
+      {item.name}
+    </ItemComponent>
   );
 }
 
-const DisableCover = styled.div`
-  background-color: rgba(52, 52, 52, 0.8);
-  border-radius: 7px;
-  height: 100%;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-  display: flex;
-  align-items: center;
-  position: absolute;
-  zIndex: 5;
-`
-
-function CategoryPartsList({category, parts}) {
+export function OrderableList({makeReorderFn, items, children, topMargin }) {
   const [submitting, setSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState();
   useEffect(() => {
@@ -110,28 +91,21 @@ function CategoryPartsList({category, parts}) {
         };
         setSubmissionResult(undefined);
       },
-      (submissionResult ? 0 : 5000)
+      (submissionResult ? 1000 : 5000)
     )
   }, [submissionResult, setSubmissionResult]);
-
-  const setCategoryOrder = useSetCategoryOrder(
-    category._id, 
-    {onSettled: result => {
+  const reorderFn = makeReorderFn({
+    onSettled: result => {
       setSubmitting(false);
       setDirtyOrder(false);
       setSubmissionResult(result.ok && result.status === 200);
     }},
   )
-  const formatParts = (partList) => partList.map(
-    (part, index) => ({id: part._id, index})
+  const formatItems = (itemList) => itemList.map(
+    (item, index) => ({id: item._id, index})
   );
-  const history = useHistory();
-  const viewCategory = useCallback(
-    () => history.push('/category/' + category._id),
-    [history, category._id]
-  )
-  const [partsState, setPartsState] = useState(
-    JSON.parse(JSON.stringify(parts))
+  const [groupState, setGroupState] = useState(
+    JSON.parse(JSON.stringify(items))
   );
   const [dirtyOrder, setDirtyOrder] = useState(false);
   const persistOrder = async () => {
@@ -139,42 +113,34 @@ function CategoryPartsList({category, parts}) {
       return;
     }
     setSubmitting(true);
-    await setCategoryOrder({partOrder: formatParts(partsState)});
+    await reorderFn({itemOrder: formatItems(groupState)});
   }
-  const movePart = useCallback((dragIndex, hoverIndex) => {
-    const dragPart = partsState[dragIndex];
+  const moveItem = useCallback((dragIndex, hoverIndex) => {
+    const dragItem = groupState[dragIndex];
     setDirtyOrder(true);
-    setPartsState(update(partsState, {
+    setGroupState(update(groupState, {
       $splice: [
         [dragIndex, 1], // delete dragged element
-        [hoverIndex, 0, dragPart], // place dragged element in new location
+        [hoverIndex, 0, dragItem], // place dragged element in new location
       ],
     }));
-  }, [partsState]);
+  }, [groupState]);
 
   return (
     <div
       className="page-card"
       style={{position: "relative", display: "inline-flex"}}
     >
+      {topMargin && <div style={{marginTop: 20}}/>}
+      { children }
       <div className="flex-column">
-        <div className="flex-row">
-          <h3>Category: {category.name}</h3>
-          <button
-            className="btn btn-secondary"
-            onClick={viewCategory}
-            style={{marginLeft: "20px"}}
-          >
-            View
-          </button>
-        </div>
-        {partsState.map((part, index) => (
-          <Part
-            key={part._id}
-            id={part._id}
+        {groupState.map((item, index) => (
+          <Item
+            key={item._id}
+            id={item._id}
             index={index}
-            part={part}
-            movePart={movePart}
+            item={item}
+            movePart={moveItem}
             persistOrder={persistOrder}
           />
         ))}
@@ -189,21 +155,6 @@ function CategoryPartsList({category, parts}) {
           </DisableCover> 
         : ''
       }
-    </div>
-  );
-}
-
-export default function EditCategoryPage() {
-  const { id } = useParams();
-  const categoryPartsQuery = useGetPartsByCategory(id, { noQuantity: true });
-  const categoryQuery = useGetCategory(id);
-  return (
-    <div className="page">
-      <QueryLoader query={categoryQuery} propName={"category"}>
-        <QueryLoader query={categoryPartsQuery} propName={"parts"}>
-            <CategoryPartsList/>
-        </QueryLoader>
-      </QueryLoader>
     </div>
   );
 }

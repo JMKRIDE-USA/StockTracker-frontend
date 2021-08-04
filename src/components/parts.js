@@ -6,12 +6,16 @@ import styled from 'styled-components';
 
 import { QueryLoader } from '../modules/data.js';
 import { colorNameToHex, colorIsDark } from '../constants.js';
-import { useGetPart, useAdjustPartQuantity } from '../modules/inventory.js';
+import {
+  useGetPart,
+  useAdjustPartQuantity,
+  useAdjustCompleteSetQuantity,
+} from '../modules/inventory.js';
 import { LoadingText } from './loading.js';
 import { ResultIndicator } from './result.js';
 
 
-const PartForm = styled.div`
+const AdjustmentForm = styled.div`
   form {
     display: flex;
     flex-direction: row;
@@ -27,8 +31,126 @@ const PartForm = styled.div`
     }
   }
 `
-function PartAdjustmentForm({part, negateQuantity, quantityAllowed}) {
+function AmountAdjustmentForm({
+  adjustAmountFn,
+  submitting,
+  setSubmitting,
+  submissionResult,
+  setSubmissionResult,
+  negateQuantity,
+  quantityAllowed,
+  buttonStyle,
+  id,
+}) {
   const [amount, setAmount] = useState(0);
+  const submitAdjustment = async (event) => {
+    event.preventDefault();
+    const quantity = (negateQuantity 
+      ? -event.target?.[0].valueAsNumber
+      : event.target?.[0].valueAsNumber
+    );
+    const { allowed, reason } = quantityAllowed(quantity);
+    if(!allowed) {
+      console.log("[!] Quantity not allowed: " + reason);
+      setSubmissionResult(false);
+    } else if(quantity !== 0) {
+      setSubmitting(true);
+      await adjustAmountFn({quantity});
+    }
+    setAmount(0);
+  }
+  const inputId = negateQuantity ? id + "amount-input-1" : id + "amount-input-2";
+  const label = negateQuantity ? "Withdraw" : "Deposit";
+  return (
+    <AdjustmentForm>
+      <form className="form-group" onSubmit={submitAdjustment}>
+        <label htmlFor={inputId}>{label}:</label>
+        <input
+          id={ inputId }
+          type="number"
+          value={amount}
+          onChange={(event) => setAmount(event.target.value)}
+        />
+        <button
+          className="btn btn-primary"
+          type="submit"
+          disabled={submitting}
+          style={buttonStyle}        
+        >
+          Submit
+        </button>
+        {submitting ? <LoadingText/> : ''}
+        {submissionResult !== undefined ? <ResultIndicator result={submissionResult}/> : ''}
+      </form>
+    </AdjustmentForm>
+  );
+}
+
+const CompleteSetAdjustmentForm = ({completeSet, ...props}) => {
+  const [submitting, setSubmitting] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState();
+  useEffect(() => {
+    if(submissionResult === undefined) {
+      return;
+    }
+    setTimeout(
+      () => setSubmissionResult(undefined),
+      (submissionResult ? 1000 : 5000)
+    )
+  }, [submissionResult, setSubmissionResult]);
+  const adjustQuantity = useAdjustCompleteSetQuantity(
+    {completeSetId: completeSet._id},
+    {onSettled: (result) => {
+      setSubmitting(false);
+      setSubmissionResult(result.ok && result.status === 201);
+    }},
+  );
+  return AmountAdjustmentForm({
+    adjustAmountFn: adjustQuantity,
+    submitting, setSubmitting,
+    submissionResult, setSubmissionResult,
+    buttonStyle: {
+      backgroundColor: colorNameToHex(completeSet.color),
+      color: colorIsDark(completeSet.color) ? "white" : "black",
+    },
+    id: completeSet._id,
+    ...props
+  });
+}
+
+export const CompleteSetWithdrawalForm = ({completeSet}) => (
+  <CompleteSetAdjustmentForm
+    completeSet={completeSet}
+    negateQuantity={true}
+    quantityAllowed={quantity => {
+      if(quantity > 0) {
+        return {
+          allowed: false,
+          reason: "No deposits from the complete set withdrawal form!",
+        };
+      }
+      return {allowed: true, reason: ""};
+    }}
+  />
+);
+
+export const CompleteSetDepositForm = ({completeSet}) => (
+  <CompleteSetAdjustmentForm
+    completeSet={completeSet}
+    negateQuantity={false}
+    quantityAllowed={quantity => {
+      if(quantity < 0) {
+        return {
+          allowed: false,
+          reason: "No withdrawal from the complete set deposit form!",
+        };
+      }
+      return {allowed: true, reason: ""};
+    }}
+  />
+);
+
+const PartAdjustmentForm = ({part, ...props}) => {
   const [submitting, setSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState();
   useEffect(() => {
@@ -47,50 +169,17 @@ function PartAdjustmentForm({part, negateQuantity, quantityAllowed}) {
       setSubmissionResult(result.ok && result.status === 201);
     }},
   );
-  const submitAdjustment = async (event) => {
-    event.preventDefault();
-    const quantity = (negateQuantity 
-      ? -event.target?.[0].valueAsNumber
-      : event.target?.[0].valueAsNumber
-    );
-    const { allowed, reason } = quantityAllowed(quantity);
-    if(!allowed) {
-      console.log("[!] Quantity not allowed: " + reason);
-      setSubmissionResult(false);
-    } else {
-      setSubmitting(true);
-      await adjustQuantity({quantity});
-    }
-    setAmount(0);
-  }
-  const inputId = negateQuantity ? "amount-input-1" : "amount-input-2";
-  const label = negateQuantity ? "Withdraw" : "Deposit";
-  return (
-    <PartForm>
-      <form className="form-group" onSubmit={submitAdjustment}>
-        <label htmlFor={inputId}>{label}:</label>
-        <input
-          id={ inputId }
-          type="number"
-          value={amount}
-          onChange={(event) => setAmount(event.target.value)}
-        />
-        <button
-          className="btn btn-primary"
-          type="submit"
-          disabled={submitting}
-          style={{
-            backgroundColor: colorNameToHex(part.color),
-            color: colorIsDark(part.color) ? "white" : "black",
-          }}
-        >
-          Submit
-        </button>
-        {submitting ? <LoadingText/> : ''}
-        {submissionResult !== undefined ? <ResultIndicator result={submissionResult}/> : ''}
-      </form>
-    </PartForm>
-  );
+
+  return AmountAdjustmentForm({
+    adjustAmountFn: adjustQuantity,
+    submitting, setSubmitting,
+    submissionResult, setSubmissionResult,
+    buttonStyle: {
+      backgroundColor: colorNameToHex(part.color),
+      color: colorIsDark(part.color) ? "white" : "black",
+    },
+    ...props
+  });
 }
 
 const PartDepositForm = ({part}) => (

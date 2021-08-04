@@ -1,68 +1,80 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
+import { MdAdd } from 'react-icons/md';
+import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
-import { useGetAllCategories } from '../modules/inventory.js';
+import { PageCard, TitleCard  } from '../components/common.js';
+import { selectCategorySetId } from '../redux/inventorySlice.js';
+import { QueryLoader } from '../modules/data.js';
+import { useGetAllCategoriesByCategorySet } from '../modules/inventory.js';
 import { CategoryDisplayCard } from '../components/inventory-display.js';
 import { CategorySetSelector } from '../components/selectors.js';
+import { ReorderButton, EditButton, CreateButton } from '../components/buttons.js';
 
-function AllCategories() {
-  const categoryQuery = useGetAllCategories()
-  if (![categoryQuery].every((query) => query.status === 'success')) {
-    return (
-      <div> Categories loading... </div>
-    )
-  }
-  if(!Object.hasOwnProperty.call(categoryQuery.data, 'result')) {
-    return (
-      <div className="page-card">
-        <h3 className="error-text">Error loading categories!</h3>
-        { JSON.stringify(categoryQuery.data) }
+
+function AllCategories({categories}) {
+  if(categories.length) {
+    return categories.map((category, index) => (
+      <div className="bar-chart-supercard" key={index}>
+        <CategoryDisplayCard
+          categoryId={category._id}
+          categoryName={category.name}
+          length={category.length}
+        />
       </div>
-    );
+    ));
   }
-  let sortedCategories = categoryQuery.data.result;
-  sortedCategories.sort((a,b) => (
-    (a.sortIndex < b.sortIndex) ? -1
-    : ((a.sortIndex > b.sortIndex) ? 1 : 0)
-  ));
-  return sortedCategories.map((category, index) => (
-    <div className="bar-chart-supercard" key={index}>
-      <CategoryDisplayCard
-        categoryId={category._id}
-        categoryName={category.name}
-        length={category.length}
-      />
-    </div>
-  ));
-}
-
-function TitleCard() {
   return (
-    <div className="page-card">
-      <h1>
-        JMKRIDE StockTracker v2.0
-      </h1>
-      <div className="begoodpeople">
-        Be Good People.
-      </div>
-      <div className="flex-column">
-        <div className="flex-row flex-centered">
-          <div className="text-bold">Current Category Set:</div>
-          <CategorySetSelector/>
-          <button className="btn btn-secondary">
-            Edit
-          </button>
-        </div>
-      </div>
-    </div>
-  )
+    <PageCard>
+      No Categories found.<br/>
+      Create one or edit the category set above to add an existing category.
+    </PageCard>
+  );
 }
 
 function Home() {
+  const categoryQuery = useGetAllCategoriesByCategorySet()
+  const history = useHistory()
+  const currentCategorySet = useSelector(selectCategorySetId);
+  const createCategory = useCallback(
+    () => history.push('/create-category'),
+    [history],
+  );
+  const reorderCategorySet = useCallback(
+    () => history.push('/reorder-categoryset/' + currentCategorySet),
+    [history, currentCategorySet],
+  )
+  const editCategorySet = useCallback(
+    () => history.push('/edit-categoryset/' + currentCategorySet),
+    [history, currentCategorySet],
+  )
+  const createCategorySet = useCallback(
+    () => history.push('/create-categoryset'),
+    [history],
+  )
   return (
     <div className="page">
-      <TitleCard/>
-      <AllCategories/>
+      <TitleCard title="Categories">
+        <div className="flex-row flex-centered">
+          <div className="text-bold">Current Category Set:</div>
+          <CategorySetSelector/>
+          <ReorderButton style={{marginRight: 5}} onClick={reorderCategorySet}/>
+          <EditButton style={{marginRight: 5}} onClick={editCategorySet}/>
+          <CreateButton onClick={createCategorySet}/>
+        </div>
+        <div className="flex-row flex-centered">
+          <div className="text-bold" style={{marginRight: 20}}>
+            Create Category:
+          </div>
+          <button className="btn btn-primary" onClick={createCategory}>
+            <MdAdd size={30} color="white"/>
+          </button>
+        </div>
+      </TitleCard>
+      <QueryLoader query={categoryQuery} propName="categories" pageCard>
+        <AllCategories/>
+      </QueryLoader>
     </div>
   )
 }

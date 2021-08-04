@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 
 import { QueryClient } from 'react-query';
 
+import { OptionalCard } from '../components/common.js';
+import { InfoListFromObject } from '../components/lists.js';
 import { selectAuthHeader } from '../redux/authSlice.js';
 import config from '../config.js';
 
@@ -13,9 +15,11 @@ export const queryClient = new QueryClient();
 
 export function useGetQuery(endpoint, key, options = {}) {
   const header = useSelector(selectAuthHeader);
+  // caching invalidations from either
+  const cache = Array.isArray(key) ? key.concat(endpoint) : [key, endpoint];
   try {
     const query = useQuery(
-      [key, endpoint], // caching invalidations from either
+      cache,
       () => fetch(
         config.backend_url + endpoint,
         {
@@ -70,11 +74,11 @@ export function createMutationCall(mutationFn, mutationVerb) {
 }
 
 export function onQuerySuccess(query, thenFn, {name = "Resource", pageCard = false} = {}) {
-  if(query.status === 'loading') {
+  if(query.status === 'loading' || query.status === 'idle') {
     return (
-      <div className={"query-loading" + pageCard ? "page-card" : ""}>
+      <OptionalCard pageCard={pageCard}>
         {name} loading...
-      </div>
+      </OptionalCard>
     )
   }
   if(
@@ -82,23 +86,28 @@ export function onQuerySuccess(query, thenFn, {name = "Resource", pageCard = fal
     !Object.hasOwnProperty.call(query.data, 'result')
   ) {
     return (
-      <div className={"query-error" + pageCard ? "page-card" : ""}>
+      <OptionalCard pageCard={pageCard}>
         <h3 className="error-text">Error loading {name}!</h3>
-        { JSON.stringify(query.error) }
-      </div>
-    );
+        <InfoListFromObject data={{
+          status: query.status,
+          error: JSON.stringify(query.error) ,
+          data: query.data 
+            ? JSON.stringify(query.data).slice(0, 50) + "..."
+            : query.data,
+        }}/>
+      </OptionalCard>
+    )
   }
   return thenFn(query.data);
 }
 
-export function QueryLoader({query, propName, children, ...props}) {
-  const propNoun = propName.charAt(0).toUpperCase() + propName.slice(1);
+export function QueryLoader({query, propName, pageCard, children, ...props}) {
   return onQuerySuccess(query, (data) => {
     if(!data.result) {
       return (
-        <div className="page-card">
-          <h3>{propNoun} Not Found.</h3>
-        </div>
+        <OptionalCard pageCard={pageCard}>
+          <h3>{propName} Not Found.</h3>
+        </OptionalCard>
       );
     }
     return React.Children.map(children, child => {
@@ -107,5 +116,5 @@ export function QueryLoader({query, propName, children, ...props}) {
       }
       return child;
     });
-  }, {name: propNoun});
+  }, {name: propName, pageCard});
 }

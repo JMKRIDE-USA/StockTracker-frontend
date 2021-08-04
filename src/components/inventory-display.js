@@ -4,37 +4,53 @@ import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 
 import { Bar } from 'react-chartjs-2';
-import { HiMenuAlt1, HiMenuAlt3 } from 'react-icons/hi';
 
+import { PageCard } from '../components/common.js';
+import { ReorderButton, EditButton } from '../components/buttons.js';
 import { QueryLoader } from '../modules/data.js';
 import { colorNameToHex } from '../constants.js';
 import { useGetPartsByCategory } from '../modules/inventory.js';
 import { PartInfoAndControls } from './parts.js';
 
-export function PartsDisplay({parts, setSelectedPart}) {
+export function PartsDisplayChart({parts, setSelectedPart, partOccurance}) {
   const getElementAtEvent = element => {
     if(element.length) {
       setSelectedPart(parts[element[0]?.index]);
     }
+  }
+  const getDataset = (data, colors, label) => ({
+      data,
+      backgroundColor: colors,
+      borderColor: data.map(() => '#000000'),
+      borderWidth: 1,
+      borderRadius: 1,
+      barThickness: 'flex',
+      maxBarThickness: 50,
+      barPercentage: 0.95,
+      categoryPercentage: 1,
+      ...(partOccurance ? {label} : {}),
+    }
+  )
+  let datasets = [
+    getDataset(
+      parts.map(part => part.quantity),
+      parts.map(part => colorNameToHex(part.color)),
+      "total quantity",
+    ),
+  ]
+  if (partOccurance) {
+   datasets.push(getDataset(
+      parts.map(part => Math.floor(part.quantity / partOccurance[part._id])),
+      parts.map(part => colorNameToHex(part.color)),
+      "complete sets",
+    ));
   }
   return (
     <div className="bar-chart">
       <Bar
         data={{
           labels: parts.map(part => part.name),
-          datasets: [{
-            data: parts.map(part => part.quantity),
-            backgroundColor: parts.map(
-                part => colorNameToHex(part.color)
-            ),
-            borderColor: parts.map(() => '#000000'),
-            borderWidth: 1,
-            borderRadius: 1,
-            barThickness: 'flex',
-            maxBarThickness: 50,
-            barPercentage: 0.95,
-            categoryPercentage: 1,
-          }]
+          datasets,
         }}
         options={{
           animation: false,
@@ -55,22 +71,9 @@ export function PartsDisplay({parts, setSelectedPart}) {
 
 const ChartButtons = styled.div`
   margin-left: 2px;
-  & > button:last-child {
+  & > button {
     margin-left: 8px;
-    margin-right: 8px;
   }
-`
-const ChartCard = styled.div`
-  background-color: white;
-  justify-content: center;
-  margin: 20px;
-  padding-top: 5px;
-  border-radius: 10px;
-  border-style: solid;
-  border-width: 3px;
-  border-color: black;
-  width: 95vw;
-  max-width: 1000px;
 `
 const ChartTitleRow = styled.div`
   display: flex;
@@ -78,22 +81,27 @@ const ChartTitleRow = styled.div`
   justify-content: space-between;
 `
 
-export function PartsDisplayCard(
-  {parts, name, height, buttonFn = () => <div/>, partInfoAndControlsOptions}
-) {
-  const [selectedPart, setSelectedPart] = useState();
-  height = height ? height : Math.max((parts.length * 35), 50) 
+export function PartsDisplay({
+  parts, name, height, style, title = true,
+  buttonFn = () => <div/>, partInfoAndControlsOptions, 
+  initialSelectedPart, ...props
+}) {
+  const [selectedPart, setSelectedPart] = useState(initialSelectedPart);
+  let cardHeight = Math.max((parts.length * (height ? height : 35)), 80) 
   return (
-    <ChartCard>
-      <ChartTitleRow>
-        <div/>
-        <h3>{name} Inventory</h3>
-        {buttonFn()}
-      </ChartTitleRow>
-      <div className="chart-div" style={{height: height.toString() + "px"}}>
-        <PartsDisplay
+    <div style={style}>
+      {title &&
+        <ChartTitleRow>
+          <div/>
+          <h3>{name} Inventory</h3>
+          {buttonFn()}
+        </ChartTitleRow>
+      }
+      <div className="chart-div" style={{height: cardHeight.toString() + "px"}}>
+        <PartsDisplayChart
           parts={parts}
           setSelectedPart={setSelectedPart}
+          {...props}
         />
       </div>
       { selectedPart 
@@ -104,7 +112,7 @@ export function PartsDisplayCard(
           /> 
         : <div/> 
       }
-    </ChartCard>
+    </div>
   )
 }
 
@@ -114,23 +122,19 @@ function CategoryButtons({categoryId, viewButton, editButton}) {
     () => history.push('/category/' + categoryId),
     [history, categoryId]
   )
+  const reorderCategory = useCallback(
+    () => history.push('/reorder-category/' + categoryId),
+    [history, categoryId]
+  )
   const editCategory = useCallback(
-    () => history.push('/category/edit/' + categoryId),
+    () => history.push('/edit-category/' + categoryId),
     [history, categoryId]
   )
   return (
     <ChartButtons>
-      { viewButton ?
-        <button onClick={viewCategory} className="btn btn-secondary">View</button>
-        : ''
-      }
-      { editButton ?
-        <button onClick={editCategory} className="btn btn-secondary">
-          <HiMenuAlt1 size={15}/>
-          <HiMenuAlt3 size={15}/>
-        </button>
-        : ''
-      }
+      { viewButton && <button onClick={viewCategory} className="btn btn-secondary">View</button>}
+      { editButton && <ReorderButton onClick={reorderCategory}/>}
+      { editButton && <EditButton onClick={editCategory}/>}
     </ChartButtons>
   )
 }
@@ -140,10 +144,12 @@ export function CategoryDisplayCard(
 ) {
   const partsQuery = useGetPartsByCategory(categoryId);
   return (
-    <QueryLoader query={partsQuery} propName={"parts"}>
-      <PartsDisplayCard name={categoryName} buttonFn={() => (
-        <CategoryButtons {...{categoryId, viewButton, editButton}}/>
-      )}/>
-    </QueryLoader>
+    <PageCard style={{minWidth: "1000px"}}>
+      <QueryLoader query={partsQuery} propName={"parts"}>
+        <PartsDisplay name={categoryName} buttonFn={() => (
+          <CategoryButtons {...{categoryId, viewButton, editButton}}/>
+        )} style={{minWidth: "1000px"}}/>
+      </QueryLoader>
+    </PageCard>
   );
 }

@@ -1,8 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-import { useTable, useSortBy } from 'react-table';
 import styled from 'styled-components';
-import { HiSortAscending, HiSortDescending } from 'react-icons/hi';
+import { useTable, useSortBy } from 'react-table';
+import {
+  HiSortAscending,
+  HiSortDescending,
+  HiChevronUp,
+  HiChevronDown,
+} from 'react-icons/hi';
+
+import { InfoListFromObject } from '../lists.js';
+
+const EIOStyle = styled.div`
+  display: flex;
+  min-width: 100px;
+  max-width: 600px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  padding-right: 25px;
+  & > div {
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+  }
+  & > button {
+    border: 0 solid black;
+    background-color: transparent;
+    position: absolute;
+    right: 0;
+  }
+`
+export const ExpandableInfoObjectCell = ({value}) => {
+  const [collapsed, setCollapsed] = useState(true);
+  if(!value) {
+    return <></>
+  }
+  if(Object.keys(value).length <=1) {
+    return <InfoListFromObject data={value}/>
+  }
+  const firstKey = Object.keys(value)[0];
+  const firstValue = JSON.stringify(value[firstKey])
+  const displayString = firstValue.length > 30 ? firstValue.slice(0, 30) : JSON.parse(firstValue)
+  const collapsedData = {[firstKey]: displayString}
+  return (
+    <EIOStyle>
+      <InfoListFromObject data={collapsed ? collapsedData : value} ellipses={collapsed}/>
+      <button onClick={() => setCollapsed(!collapsed)}>
+        {collapsed ? <HiChevronUp size={15}/> : <HiChevronDown size={15}/>}
+      </button>
+    </EIOStyle>
+  );
+}
 
 const Styles = styled.div`
   display: flex;

@@ -23,27 +23,28 @@ export const permissionLevelToAuthState = (permissionLevel) => (
   }[permissionLevel]
 );
 
-export const colorNameToHex = (color) => (
-  {
-    Black: "#000000",
-    White: "#ffffff",
-    Cyan: "#00a0db",
-    Pink: "#ec008c",
-    Red: "#ed1c24",
-    Yellow: "#fff200",
-    Orange: "#f26522",
-    Lavender: "#a98ec3",
-    Green: "#9ccb3b",
-    Marine: "#276cdb",
-    Purple: "#ac519f",
-    Mint: "#8fd0b8",
-    Chrome: "#88898a",
-    Silver: "#c1c1c1",
-    Gold: "#ffc20e",
-    Sakura: "#efbedf",
-    Brown: "#977348",
-  }[color]
-);
+export const allColors = {
+  Black: "#000000",
+  White: "#ffffff",
+  Cyan: "#00a0db",
+  Pink: "#ec008c",
+  Red: "#ed1c24",
+  Yellow: "#fff200",
+  Orange: "#f26522",
+  Lavender: "#a98ec3",
+  Green: "#9ccb3b",
+  Marine: "#276cdb",
+  Purple: "#ac519f",
+  Mint: "#8fd0b8",
+  Chrome: "#88898a",
+  Silver: "#c1c1c1",
+  Gold: "#ffc20e",
+  Sakura: "#efbedf",
+  Brown: "#977348",
+}
+
+export const colorNameToHex = (color) => allColors[color];
+export const colorNames = Object.keys(allColors);
 
 export const colorIsDark = color => (
   [
@@ -51,3 +52,15 @@ export const colorIsDark = color => (
     "Purple", "Green", "Red", "Chrome",
   ].includes(color)
 );
+
+export const CSPartPropertyList = [
+  'lwheel1', 'lwheel2', 'ltruck', 'ldeck', 'lgrip',
+  'rwheel1', 'rwheel2', 'rtruck', 'rdeck', 'rgrip',
+]
+
+export const PartTypes = {
+  WHEEL: "wheel",
+  TRUCK: "truck",
+  DECK: "deck",
+  GRIP: "grip",
+}

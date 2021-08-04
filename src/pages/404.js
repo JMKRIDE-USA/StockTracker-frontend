@@ -1,14 +1,17 @@
 import React from 'react';
 
+import { PageCard } from '../components/common.js';
+
+
 function NotFound() {
   return (
     <div className="page">
-      <div className="page-card">
+      <PageCard>
         <h1>
           404 Page Not Found
         </h1>
         <a href="/">Go back to home</a>
-      </div>
+      </PageCard>
     </div>
   )
 }

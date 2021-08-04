@@ -1,9 +1,13 @@
 import React from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
+import styled from 'styled-components';
 
+import { QueryLoader } from '../modules/data.js';
+import { PageCard, TitleCard } from '../components/common.js';
 import { ISOToReadableString } from '../modules/date.js';
 import { InfoListFromObject } from '../components/lists.js';
+import { PageableLogTable } from '../components/tables/logs.js';
 import {
   selectAuthState,
   selectUserId,
@@ -13,24 +17,40 @@ import {
 import { authStateToString } from '../constants.js';
 import { useGetSessions, useDisableSession } from '../modules/auth.js';
 
+const SessionListStyle = styled.div`
+  display: flex;
+  flex-direction: column;
+  & > * {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 2px solid black;
+    margin-top: 10px;
+    & > button {
+      margin-left: 20px;
+    }
+  }
+  & > *:first-child {
+    border-top: 0px solid black;
+    margin-top: 0px;
+  }
+`
 
-function SessionsList() {
-  const sessionsQuery = useGetSessions();
+function SessionsList({sessions}) {
   const disableSession = useDisableSession();
   const dispatch = useDispatch();
 
-  if (![sessionsQuery].every((query) => query.status === 'success')) {
-    return (
-      <div> Profile loading... </div>
+  let validSessions = sessions.filter(
+    item => (
+      Object.hasOwnProperty.call(item, "lastUsedIP") && item.lastUsedIP
+      && Object.hasOwnProperty.call(item, "lastUsedDate") && item.lastUsedDate
     )
-  }
-
-  let sessionsData = sessionsQuery.data.map(item => (
-    { 
-      "Last Seen": ISOToReadableString(item.lastUsedDate),
-      "At": item.lastUsedIP.replace('::ffff:',''),
-    }
-  ));
+  )
+  let sessionsData = validSessions.map(item => ({ 
+    "Last Seen": ISOToReadableString(item.lastUsedDate),
+    "At": item.lastUsedIP.replace('::ffff:',''),
+  }));
 
   const disableSessionOnClick = ({id, current}) => (
     () => {
@@ -42,16 +62,16 @@ function SessionsList() {
     }
   )
   return (
-    <div className="session-list">
-      { sessionsQuery.data.map((item, index) =>
-        <div key={index} className="session-item">
+    <SessionListStyle>
+      { validSessions.map((item, index) =>
+        <div key={index}>
           <InfoListFromObject data={sessionsData[index]}/>
           <button className="btn btn-secondary" onClick={disableSessionOnClick({id: item.id, current: item.current})}>
             {item.current ? "Log Out" : "Delete" }
           </button>
         </div>
       )}
-    </div>
+    </SessionListStyle>
   );
 }
 
@@ -59,12 +79,11 @@ function Profile() {
   const userInfo = useSelector(selectUserInfo);
   const userId = useSelector(selectUserId);
   const authState = useSelector(selectAuthState);
+  const sessionsQuery = useGetSessions();
+
   return (
     <div className="page">
-      <div className="page-card">
-        <h1>
-          {userInfo.firstName + "'s Profile" }
-        </h1>
+      <TitleCard title={userInfo.firstName + "'s Profile" }>
         <InfoListFromObject
           data={{
             "User ID": userId,
@@ -74,13 +93,19 @@ function Profile() {
             Created: ISOToReadableString(userInfo.createdAt),
           }}
         />
-      </div>
-      <div className="page-card">
+      </TitleCard>
+      <PageCard>
         <h1>
           {userInfo.firstName + "'s Active Sessions" }
         </h1>
-        <SessionsList/>
-      </div>
+        <QueryLoader query={sessionsQuery} propName={"sessions"}>
+          <SessionsList/>
+        </QueryLoader>
+      </PageCard>
+      <PageCard>
+        <h3>{"All " + userInfo.firstName + "'s Activity"}</h3>
+        <PageableLogTable endpoint={"logs/user/id/" + userId} pageCard={false}/>
+      </PageCard>
     </div>
   )
 }

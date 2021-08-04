@@ -16,8 +16,11 @@ import {
 import {
   selectInventoryId,
   selectCategorySetId,
+  selectCSSetId,
   setInventoryId,
   setCategorySetId,
+  setPartTypeCategories,
+  setCSSetId,
 } from './inventorySlice.js';
 import config from '../config.js';
 import { getDateAfter, hasExpired, needsRefresh } from '../modules/date.js';
@@ -31,6 +34,7 @@ const AllALMs = {
      
     const inventoryId = selectInventoryId(state);
     const categorySetId = selectCategorySetId(state);
+    const CSSetId = selectCSSetId(state);
      
     if (! accessToken) {
       console.log('User is not logged in. Resetting auth.');
@@ -64,11 +68,17 @@ const AllALMs = {
             permissionLevelToAuthState(res.permissionLevel))
           );
           dispatch(setUserInfo(res));
+          if(res.settings?.partTypeCategories) {
+            dispatch(setPartTypeCategories(res.settings.partTypeCategories))
+          }
           if( !inventoryId) {
             dispatch(setInventoryId(res.defaultInventory));
           }
           if( !categorySetId) {
             dispatch(setCategorySetId(res.defaultCategorySet));
+          }
+          if( !CSSetId) {
+            dispatch(setCSSetId(res.defaultCSSet));
           }
         } else {
           dispatch(resetAuth());

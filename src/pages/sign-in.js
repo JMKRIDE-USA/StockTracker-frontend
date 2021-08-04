@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import { useLogin } from '../modules/auth.js';
+import { PageCard } from '../components/common.js';
 
 
 function SignInForm() {
@@ -40,17 +41,17 @@ function SignInForm() {
 function SignIn() {
   return (
     <div className="page">
-      <div className="page-card">
+      <PageCard>
         <h1>
           JMKRIDE Stocktracker
         </h1>
         <div className="text body-text text-center">
           You are logged out. Please sign in again.
         </div>
-      </div>
-      <div className="page-card">
+      </PageCard>
+      <PageCard>
         <SignInForm/>
-      </div>
+      </PageCard>
     </div>
   )
 }

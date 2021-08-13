@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { QueryLoader } from '../modules/data.js';
@@ -8,13 +9,14 @@ import { PageCard, TitleCard } from '../components/common.js';
 import { ISOToReadableString } from '../modules/date.js';
 import { InfoListFromObject } from '../components/lists.js';
 import { PageableLogTable } from '../components/tables/logs.js';
+import { AllUserTable } from '../components/tables/users.js';
 import {
   selectAuthState,
   selectUserId,
   selectUserInfo,
   resetAuth,
 } from '../redux/authSlice.js';
-import { authStateToString } from '../constants.js';
+import { AUTH_STATE, authStateToString } from '../constants.js';
 import { useGetSessions, useDisableSession } from '../modules/auth.js';
 
 const SessionListStyle = styled.div`
@@ -66,13 +68,39 @@ function SessionsList({sessions}) {
       { validSessions.map((item, index) =>
         <div key={index}>
           <InfoListFromObject data={sessionsData[index]}/>
-          <button className="btn btn-secondary" onClick={disableSessionOnClick({id: item.id, current: item.current})}>
+          <button
+            className="btn btn-secondary"
+            onClick={disableSessionOnClick({id: item.id, current: item.current})}
+          >
             {item.current ? "Log Out" : "Delete" }
           </button>
         </div>
       )}
     </SessionListStyle>
   );
+}
+
+function AdminCard() {
+  const history = useHistory();
+  const viewAllUsers = useCallback(
+    () => history.push('/user'),
+    [history]
+  );
+  return (
+    <PageCard>
+      <div className="flex-row">
+        <h3>User Controls</h3>
+        <button
+          onClick={viewAllUsers}
+          className="btn btn-secondary"
+          style={{marginLeft: 20}}
+        >
+          View All
+        </button>
+      </div>
+      <AllUserTable/>
+    </PageCard>
+  )
 }
 
 function Profile() {
@@ -94,10 +122,9 @@ function Profile() {
           }}
         />
       </TitleCard>
+      { authState === AUTH_STATE.ADMIN && <AdminCard/> }
       <PageCard>
-        <h1>
-          {userInfo.firstName + "'s Active Sessions" }
-        </h1>
+        <h3>{userInfo.firstName + "'s Active Sessions" }</h3>
         <QueryLoader query={sessionsQuery} propName={"sessions"}>
           <SessionsList/>
         </QueryLoader>

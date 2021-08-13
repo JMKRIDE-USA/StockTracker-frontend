@@ -3,6 +3,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import chroma from 'chroma-js';
 import Select from 'react-select';
+import { AUTH_STATE, authStateToString } from '../constants.js';
 
 import {
   QueryLoader,
@@ -31,6 +32,7 @@ import {
   useSetCSSet,
 } from '../modules/inventory.js';
 import { allColors } from '../constants.js';
+import { SelectorLoader } from '../redux/loader.js';
 
 
 export function GenericSelector({queryFn, onChange, selectedId, name, dark = false}) {
@@ -105,6 +107,21 @@ export function CSSetSelector() {
   });
 }
 
+export function PermissionSelector({state}) {
+  const options = Object.entries(AUTH_STATE).map(([_, value]) => ({
+    value, label: authStateToString(value)
+  }));
+  const [value, setValue] = state;
+  return (
+    <div style={{width: "100%"}}>
+      <Select
+        options={options} value={value}
+        onChange={e => setValue(e)}
+      />
+    </div>
+  )
+}
+
 function LoadedMultiObjectSelector({objects, state}) {
   const options = objects.map(object => ({
     value: object._id,
@@ -122,7 +139,7 @@ function LoadedMultiObjectSelector({objects, state}) {
 }
 export function MultiObjectSelector({query, ...props}) {
   return (
-    <div style={{minWidth: "200px", maxWidth: "600px"}}>
+    <div style={{minWidth: "300px", maxWidth: "600px"}}>
       <QueryLoader query={query} propName="objects">
         <LoadedMultiObjectSelector {...props}/>
       </QueryLoader>
@@ -246,7 +263,7 @@ const LoadedSinglePartSelector = ({parts, state}) => {
   }));
   const [value, setValue] = state;
   return (
-    <div style={{width: "100%"}}>
+    <div style={{minWidth: 250, width: "100%"}}>
       <Select
         isSearchable options={options} value={value}
         onChange={e => setValue(e)}
@@ -255,8 +272,7 @@ const LoadedSinglePartSelector = ({parts, state}) => {
   );
 }
 
-export function SinglePartSelector({partType, ...props}) {
-  const partTypeCategories = useSelector(selectPartTypeCategories)
+const ReduxLoadedSinglePartSelector = ({partTypeCategories, partType, ...props}) => {
   const allPartsQuery = useGetAllParts();
   let categoryId;
   if(partType && Object.hasOwnProperty.call(partTypeCategories, partType)) {
@@ -269,5 +285,13 @@ export function SinglePartSelector({partType, ...props}) {
         <LoadedSinglePartSelector {...props}/>
       </QueryLoader>
     </div>
+  );
+}
+
+export function SinglePartSelector(props) {
+  return (
+    <SelectorLoader selectorFn={selectPartTypeCategories} propName="partTypeCategories">
+      <ReduxLoadedSinglePartSelector {...props}/>
+    </SelectorLoader>
   );
 }

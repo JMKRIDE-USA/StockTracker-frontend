@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -16,10 +16,10 @@ import { QueryLoader } from '../modules/data.js';
 import { ObjectForm } from '../components/object-form.js';
 
 
-const useGetStateList = (categorySet, categories) => ([
+const getStateList = (categorySet, categories) => ([
   {
     key: "name", label: "Name",
-    state: useState(categorySet ? categorySet.name : ""),
+    initialState: categorySet ? categorySet.name : "",
     component: (props) => (
       <input
         type="text" name="name"
@@ -31,17 +31,15 @@ const useGetStateList = (categorySet, categories) => ([
   },
   {
     key: "categoryIds", label: "Categories",
-    state: useState(categories
-      ? categories.map(c => ({value: c._id, label: c.name})) 
-      : []
-    ),
+    initialState: categories ? categories.map(c => ({value: c._id, label: c.name})) : [],
     component: CategorySelector,
     formatFn: i => i.map(j => j.value),
+    optional: true,
   },
 ])
 
 function CreateCategorySetCard() {
-  const stateList = useGetStateList();
+  const stateList = getStateList();
   const useMakeSubmitFn = (options) =>
     useCreateCategorySet(options);
 
@@ -49,7 +47,7 @@ function CreateCategorySetCard() {
 }
 
 function EditCategorySetCard({categorySet, categories}) {
-  const stateList = useGetStateList(categorySet, categories);
+  const stateList = getStateList(categorySet, categories);
   const useMakeSubmitFn = (options) =>
     usePatchCategorySet(categorySet._id, options);
 

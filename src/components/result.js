@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { HiCheckCircle, HiExclamation } from 'react-icons/hi';
+import { LoadingIcon } from './loading.js';
 
-export function ResultIndicator({result, dark = false}) {
+export function ResultIndicator({result, dark = false, errorText = ""}) {
   return (
     <div className="result-indicator">
       {!!result 
@@ -12,10 +13,47 @@ export function ResultIndicator({result, dark = false}) {
           </div>
         : <div className="error-text" style={{color: dark ? "lightred" : "red"}}>
             <HiExclamation size={30} color={"red"}/>
-            Failed!
+            Failed!<br/>{errorText}
           </div>
       }
     </div>
   )
 }
 
+export function useGetResultIndicator({onSuccess = () => {}} = {}) {
+  const [submitting, setSubmitting] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState(undefined);
+  const [errorText, setErrorText] = useState("")
+  useEffect(() => {
+    if(submissionResult === undefined) {
+      return;
+    }
+    setTimeout(
+      () => {
+        let success = !!submissionResult;
+        setSubmissionResult(undefined);
+        setErrorText("");
+        if(success) {
+          onSuccess();
+        }
+      },
+      (submissionResult ? 1000 : 5000)
+    )
+  }, [onSuccess, submissionResult, setSubmissionResult]);
+
+  return {
+    setSubmitting, 
+    options: {onSettled: result => {
+      setSubmitting(false);
+      setSubmissionResult(result.ok && result.status === 201);
+    }},
+    render: () => (
+      <>
+        { submitting && <LoadingIcon size={30} color="black"/> }
+        { submissionResult !== undefined && 
+            <ResultIndicator result={submissionResult} errorText={errorText}/>
+        }
+      </>
+    )
+  }
+}

@@ -1,8 +1,8 @@
 export const AUTH_STATE = {
-  "NONE": 0,
-  "READONLY": 1,
-  "READWRITE": 5,
-  "ADMIN": 500,
+  NONE: 0,
+  READONLY: 1,
+  READWRITE: 5,
+  ADMIN: 500,
 };
 
 export const authStateToString = ( state ) => (
@@ -34,7 +34,7 @@ export const allColors = {
   Lavender: "#a98ec3",
   Green: "#9ccb3b",
   Marine: "#276cdb",
-  Purple: "#ac519f",
+  Violet: "#ac519f",
   Mint: "#8fd0b8",
   Chrome: "#88898a",
   Silver: "#c1c1c1",
@@ -49,7 +49,7 @@ export const colorNames = Object.keys(allColors);
 export const colorIsDark = color => (
   [
     "Black", "Cyan", "Pink", "Orange", "Marine",
-    "Purple", "Green", "Red", "Chrome",
+    "Violet", "Green", "Red", "Chrome",
   ].includes(color)
 );
 

@@ -27,7 +27,6 @@ function PartChartCard({part}) {
         parts={[part]}
         name={part.name}
         height={80}
-        style={{minWidth: "1000px"}}
         initialSelectedPart={part}
         partInfoAndControlsOptions={{
           partViewButton: false,

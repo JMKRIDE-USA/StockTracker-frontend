@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 
 import { useParams, useHistory } from 'react-router-dom';
 
-import { useGetStateList, FakeCompleteSetIcon } from '../components/completeset-form.js';
+import { getStateList, FakeCompleteSetIcon } from '../components/completeset-form.js';
 import { TitleCard } from '../components/common.js';
 import { BackButton, DeleteButton } from '../components/buttons.js';
 import { ObjectForm } from '../components/object-form.js';
@@ -16,12 +16,13 @@ import {
 function CompleteSetCreationForm() {
   const useMakeSubmitFn = (options) => 
     useCreateCompleteSet(options)
-  const stateList = useGetStateList()
+  const stateList = getStateList()
   const allPartsQuery = useGetAllParts();
   return (
     <ObjectForm {...{
       useMakeSubmitFn, stateList,
-      buttonText: "Submit", formStyle: {marginTop: 100}
+      buttonText: "Submit", formStyle: {marginTop: 100},
+      forwardFormState: true,
     }}>
       <QueryLoader query={allPartsQuery} propName="parts">
         <FakeCompleteSetIcon stateList={stateList}/>
@@ -41,19 +42,25 @@ function CompleteSetEditForm({completeSet}) {
     deleteCS();
     backToCompleteSets();
   }
-  const useMakeSubmitFn = (options) => 
-    usePatchCompleteSet(completeSet._id, options)
-  const stateList = useGetStateList({completeSet});
   const allPartsQuery = useGetAllParts();
-  return (
-    <ObjectForm {...{
-      useMakeSubmitFn, stateList, buttonText: "Save", formStyle: {marginTop: 100},
-    }}>
+  const FormChild = ({formState}) => (
+    <>
       <BackButton onClick={backToCompleteSets}/>
       <DeleteButton onClick={onClickDelete}/>
       <QueryLoader query={allPartsQuery} propName="parts">
-        <FakeCompleteSetIcon stateList={stateList}/>
+        <FakeCompleteSetIcon formState={formState}/>
       </QueryLoader>
+    </>
+  )
+  const useMakeSubmitFn = (options) => 
+    usePatchCompleteSet(completeSet._id, options)
+  const stateList = getStateList({completeSet});
+  return (
+    <ObjectForm {...{
+      useMakeSubmitFn, stateList, buttonText: "Save",
+      formStyle: {marginTop: 100}, forwardFormState: true,
+    }}>
+      <FormChild/>
     </ObjectForm>
   );
 }

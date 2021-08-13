@@ -1,96 +1,53 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import { useHistory, useParams } from 'react-router-dom';
 
-import { TitleCard, PageCard, CreateForm, DisableCover } from '../components/common.js';
+import { TitleCard } from '../components/common.js';
 import { BackButton, DeleteButton } from '../components/buttons.js';
 import { MultiCSSelector } from '../components/selectors.js';
 import { 
   useCreateCSSet, useGetCSSetById, useGetAllCS, usePatchCSSet, useDeleteCSSet
 } from '../modules/inventory.js';
 import { QueryLoader } from '../modules/data.js';
-import { LoadingIcon } from '../components/loading.js';
-import { ResultIndicator } from '../components/result.js';
+import { ObjectForm } from '../components/object-form.js';
 
 
-function CSSetForm({nameState, completeSetsState, makeSubmitFn, children}) {
-  const [submitting, setSubmitting] = useState(false);
-  const [submissionResult, setSubmissionResult] = useState(undefined);
-  useEffect(() => {
-    if(submissionResult === undefined) {
-      return;
-    }
-    setTimeout(
-      () => setSubmissionResult(undefined),
-      (submissionResult ? 1000 : 5000)
-    )
-  }, [submissionResult, setSubmissionResult]);
-  const submitFn = makeSubmitFn({onSettled: result => {
-      setSubmitting(false);
-      setSubmissionResult(result.ok && result.status === 201);
-    }}
-  );
-  const [name, setName] = nameState;
-
-  const onSubmit = async e => {
-    e.preventDefault();
-    let CSSetData = {
-      name, CSIds: completeSetsState[0].map(c => c.value),
-    }
-    setSubmitting(true);
-    await submitFn(CSSetData);
-  }
-
-  return (
-    <PageCard style={{position: "relative"}}>
-      <CreateForm style={{marginTop: children ? 20 : 0}}>
-        <form onSubmit={onSubmit}>
-          <div>
-            <label htmlFor="name">Name:</label>
-            <input
-              className="form-control" type="text" name="name"
-              value={name} onChange={e => setName(e.target.value)}
-              placeholder="New CS Set"
-            />
-          </div>
-          <div>
-            <label htmlFor="CSSelector">Complete Sets:</label>
-            <MultiCSSelector state={completeSetsState} id="CSSelector"/>
-          </div>
-          <button className="btn btn-primary" type="submit">Submit</button>
-        </form>
-      </CreateForm>
-      {(submitting || (submissionResult !== undefined)) &&
-        <DisableCover>
-          {submitting && <LoadingIcon size={50} color="white"/>}
-          {(submissionResult !== undefined) && 
-            <ResultIndicator dark result={submissionResult}/>
-          }
-        </DisableCover>
-      }
-      {children}
-    </PageCard>
-  );
-}
+const getStateList = ({CSSet, completeSets} = {}) => ([
+  {
+    key: "name", label: "Name",
+    initialState: CSSet ? CSSet.name : "",
+    component: (props) => (
+      <input
+        type="text" name="name"
+        className="form-control" placeholder="New CS Set" 
+        {...props}
+      />
+    ),
+    formatFn: _=>_,
+  },
+  {
+    key: "CSIds", label: "Complete Sets",
+    initialState: (completeSets 
+      ? completeSets.map(cs => ({value: cs._id, label: cs.name}))
+      : []
+    ),
+    component: MultiCSSelector, formatFn: CSs => CSs.map(c => c.value),
+  },
+])
 
 function CreateCSSetCard() {
-  const nameState = useState("")
-  const completeSetsState = useState([]);
+  const stateList = getStateList();
   const useMakeSubmitFn = (options) =>
     useCreateCSSet(options);
 
-  return <CSSetForm 
-    {...{nameState, completeSetsState, makeSubmitFn: useMakeSubmitFn}}
-  />
+  return <ObjectForm {...{stateList, useMakeSubmitFn, buttonText: "Submit"}}/>
 }
 
 function EditCSSetCard({CSSet, completeSets}) {
-  const nameState = useState(CSSet.name)
-  const completeSetsState = useState(
-    completeSets.map(cs => ({value: cs._id, label: cs.name}))
-  );
+  const stateList = getStateList({CSSet, completeSets});
   const useMakeSubmitFn = (options) =>
     usePatchCSSet(CSSet._id, options);
+
 
   const history = useHistory();
   const backToCompleteSets = useCallback(
@@ -104,12 +61,10 @@ function EditCSSetCard({CSSet, completeSets}) {
   }
 
   return (
-    <CSSetForm 
-      {...{nameState, completeSetsState, makeSubmitFn: useMakeSubmitFn}}
-    >
+    <ObjectForm {...{stateList, useMakeSubmitFn, buttonText: "Submit"}}>
       <BackButton onClick={backToCompleteSets}/>
       <DeleteButton onClick={onClickDelete}/>
-    </CSSetForm>
+    </ObjectForm>
   );
 }
 

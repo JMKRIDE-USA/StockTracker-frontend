@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 
-import { Table, ExpandableInfoObjectCell } from './table.js';
+import { Table, ExpandableInfoObjectCell, ClickableTextCell } from './table.js';
 import { ISOToReadableString } from '../../modules/date.js';
 import { QueryLoader } from '../../modules/data.js';
 import { OptionalCard } from '../../components/common.js';
@@ -71,7 +71,11 @@ export function LogTable({logs, subjectName = "Subject"}) {
   const formatted_data = logs.map(log => ({
     name: log.actor?.fullName,
     time: new Date(log.createdAt),
-    subjectName: log.subject?.name,
+    subject: {
+      text: log.subject?.name,
+      link: "/" + log.subjectType + "/" + log.subject?._id
+    },
+    subjectType: log.subjectType,
     action: log.action,
     quantity: log.quantity,
     payload: log.payload,
@@ -83,7 +87,8 @@ export function LogTable({logs, subjectName = "Subject"}) {
     },
     { Header: 'User', accessor: 'name' },
     { Header: 'Action', accessor: 'action'},
-    { Header: subjectName, accessor: 'subjectName' },
+    { Header: 'Subject Type', accessor: 'subjectType' },
+    { Header: subjectName, accessor: 'subject' , Cell: ClickableTextCell},
     { Header: 'Quantity', accessor: 'quantity', sortType: 'basic'},
     { Header: 'Payload', accessor: 'payload',
       disableSortBy: true, Cell: ExpandableInfoObjectCell,

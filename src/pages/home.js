@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
 
 import { MdAdd } from 'react-icons/md';
-import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useParams, useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { PageCard, TitleCard  } from '../components/common.js';
-import { selectCategorySetId } from '../redux/inventorySlice.js';
+import { setCategorySetId, selectCategorySetId } from '../redux/inventorySlice.js';
 import { QueryLoader } from '../modules/data.js';
 import { useGetAllCategoriesByCategorySet } from '../modules/inventory.js';
 import { CategoryDisplayCard } from '../components/inventory-display.js';
@@ -53,6 +53,11 @@ function Home() {
     () => history.push('/create-categoryset'),
     [history],
   )
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  if(id && id !== currentCategorySet) {
+    dispatch(setCategorySetId(id))
+  }
   return (
     <div className="page">
       <TitleCard title="Categories">

@@ -47,9 +47,10 @@ export const DeleteButton = ({onClick, ...props}) => {
   const [confirm, setConfirm] = useState(false);
   const confirmOnClick = () => {
     if(confirm) {
+      setConfirm(false);
       onClick();
     } else {
-      setConfirm(true)
+      setConfirm(true);
     }
   }
   return (

@@ -7,28 +7,65 @@ import { LoadingIcon } from '../components/loading.js';
 import { ResultIndicator } from '../components/result.js';
 
 
+export const TextComponent = (placeholder, moreProps = {}) => (props) => (
+  <input type="text" name="name" className="form-control" 
+    placeholder={placeholder} {...props} {...moreProps}/>
+)
+
 export function ObjectForm({
-  useMakeSubmitFn, stateList, buttonText, formStyle={}, children,
+  useMakeSubmitFn, stateList, buttonText, preProcessData, formStyle={},
+  forwardFormState=false, children,
 }){ 
   const [submitting, setSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState(undefined);
+  const [errorText, setErrorText] = useState("")
   useEffect(() => {
     if(submissionResult === undefined) {
       return;
     }
     setTimeout(
-      () => setSubmissionResult(undefined),
+      () => {
+        setSubmissionResult(undefined);
+        setErrorText("");
+      },
       (submissionResult ? 1000 : 5000)
     )
   }, [submissionResult, setSubmissionResult]);
   const submitFn = useMakeSubmitFn({onSettled: result => {
     setSubmitting(false);
-    setSubmissionResult(result.ok && result.status === 201);
+    setSubmissionResult(result?.ok && result.status === 201);
   }});
+  let initialState = {}
+  stateList.forEach(item => initialState[item.key] = item.initialState)
+  const [state, setState] = useState(initialState);
+
+  const isEmpty = item => {
+    const itemState = state[item.key];
+    if(Array.isArray(itemState)){
+      return !itemState.length;
+    }
+    return !itemState;
+  }
+
   const onSubmit = async e => {
     e.preventDefault();
     let submissionData = {};
-    stateList.forEach(item => submissionData[item.key] = item.formatFn(item.state[0]))
+    stateList.forEach(item => submissionData[item.key] = item.formatFn(state[item.key]));
+    let errorFields = stateList.filter(item => (isEmpty(item) && !item?.optional));
+    if(errorFields.length) {
+      setErrorText("Missing fields: " + errorFields.map(i => i.label).join(", "));
+      setSubmissionResult(false);
+      return;
+    }
+    if(preProcessData){
+      let [newData, errors] = preProcessData(JSON.parse(JSON.stringify(submissionData)));
+      submissionData = newData;
+      if(errors.length){
+        setErrorText("Validation Errors:", errors);
+        setSubmissionResult(false);
+        return;
+      }
+    }
     setSubmitting(true);
     return await submitFn(submissionData);
   }
@@ -36,12 +73,14 @@ export function ObjectForm({
     <PageCard style={{position: "relative"}}>
       <CreateForm style={formStyle}>
         <form onSubmit={onSubmit}>
-          { stateList.map(item => (
-            <div key={item.key}>
-              <label htmlFor={item.key}>{item.label}:</label>
+          { stateList.map((item, index) => (
+            <div key={item.key + "-" + index}>
+              <label htmlFor={item.key + "-" + index}>{item.label}:</label>
               {item.component({
-                state: item.state, value: item.state[0],
-                id: item.key, onChange: e => item.state[1](e.target.value),
+                state: [state[item.key], v => setState({...state, [item.key]: v})],
+                value: state[item.key],
+                id: item.key + "-" + index,
+                onChange: e => setState({...state, [item.key]: e.target.value}),
                 style: item.componentStyle ? item.componentStyle : {},
               })}
             </div>
@@ -55,11 +94,18 @@ export function ObjectForm({
         <DisableCover>
           {submitting && <LoadingIcon size={50} color="white"/>}
           {(submissionResult !== undefined) && 
-            <ResultIndicator dark result={submissionResult}/>
+            <ResultIndicator dark result={submissionResult} errorText={errorText}/>
           }
         </DisableCover>
       }
-      {children}
+      {
+        React.Children.map(children, child => {
+          if (forwardFormState && React.isValidElement(child)) {
+            return React.cloneElement(child, {formState: state})
+          }
+          return child;
+        })
+      }
     </PageCard>
   );
 }

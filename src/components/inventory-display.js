@@ -26,6 +26,7 @@ export function PartsDisplayChart({parts, setSelectedPart, partOccurance}) {
       borderRadius: 1,
       barThickness: 'flex',
       maxBarThickness: 50,
+      minBarLength: 10,
       barPercentage: 0.95,
       categoryPercentage: 1,
       ...(partOccurance ? {label} : {}),
@@ -38,6 +39,10 @@ export function PartsDisplayChart({parts, setSelectedPart, partOccurance}) {
       "total quantity",
     ),
   ]
+  let minQuantity = Math.min(0, ...parts.map(part => part.quantity))
+  if(minQuantity < 0){
+    minQuantity = Math.min(minQuantity, -15);
+  }
   if (partOccurance) {
    datasets.push(getDataset(
       parts.map(part => Math.floor(part.quantity / partOccurance[part._id])),
@@ -59,8 +64,8 @@ export function PartsDisplayChart({parts, setSelectedPart, partOccurance}) {
           maintainAspectRatio: false,
           plugins: {legend: {display: false}},
           scales: {
-            x: {grid: {offset: true}},
-            yAxes: [{ticks: {beginAtZero: true}}],
+            x: {grid: {offset: true}, min: minQuantity}
+            y: {ticks: {autoskip: false}},
           }
         }}
         getElementAtEvent={getElementAtEvent}
@@ -81,15 +86,19 @@ const ChartTitleRow = styled.div`
   justify-content: space-between;
 `
 
+const PartsDisplayStyle = styled.div`
+  min-width: min(95vw, 1000px);
+`
+
 export function PartsDisplay({
   parts, name, height, style, title = true,
   buttonFn = () => <div/>, partInfoAndControlsOptions, 
   initialSelectedPart, ...props
 }) {
   const [selectedPart, setSelectedPart] = useState(initialSelectedPart);
-  let cardHeight = Math.max((parts.length * (height ? height : 35)), 80) 
+  let cardHeight = Math.max((parts.length * (height ? height : 25)), 110) 
   return (
-    <div style={style}>
+    <PartsDisplayStyle>
       {title &&
         <ChartTitleRow>
           <div/>
@@ -112,7 +121,7 @@ export function PartsDisplay({
           /> 
         : <div/> 
       }
-    </div>
+    </PartsDisplayStyle>
   )
 }
 
@@ -144,7 +153,7 @@ export function CategoryDisplayCard(
 ) {
   const partsQuery = useGetPartsByCategory(categoryId);
   return (
-    <PageCard style={{minWidth: "1000px"}}>
+    <PageCard>
       <QueryLoader query={partsQuery} propName={"parts"}>
         <PartsDisplay name={categoryName} buttonFn={() => (
           <CategoryButtons {...{categoryId, viewButton, editButton}}/>

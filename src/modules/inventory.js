@@ -598,5 +598,41 @@ export const useSetPartTypeCategories = (options = {}) => {
       enabled: !!userId,
     },
   );
-  return createMutationCall(mutationFn, "creating category");
+  return createMutationCall(mutationFn, "setting part type categories");
+}
+export const useSetAuxiliaryParts = (options = {}) => {
+  const header = useSelector(selectAuthHeader);
+  const userId = useSelector(selectUserId);
+  const mutationFn = useMutation(
+    ({to_submit}) => fetch(
+      config.backend_url + "user-settings/user/id/" + userId,
+      {
+        method: "POST",
+        headers: {...header, 'Content-Type': 'application/json'},
+        body: JSON.stringify({auxiliaryParts: to_submit}),
+      },
+    ), {
+      ...options,
+      enabled: !!userId,
+    },
+  );
+  return createMutationCall(mutationFn, "setting auxiliary parts");
+}
+export const useSetWithdrawAuxiliary = (options = {}) => {
+  const header = useSelector(selectAuthHeader);
+  const userId = useSelector(selectUserId);
+  const mutationFn = useMutation(
+    ({to_submit}) => fetch(
+      config.backend_url + "user-settings/user/id/" + userId,
+      {
+        method: "POST",
+        headers: {...header, 'Content-Type': 'application/json'},
+        body: JSON.stringify({withdrawAuxiliaryParts: to_submit}),
+      },
+    ), {
+      ...options,
+      enabled: !!userId,
+    },
+  );
+  return createMutationCall(mutationFn, "setting withdraw auxiliary parts");
 }

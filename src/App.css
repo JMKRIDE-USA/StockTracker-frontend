@@ -128,15 +128,6 @@
   color: black;
 }
 
-.info-list {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-.info-list-item {
-  display: flex;
-  flex-direction: row;
-}
 .info-list-item > .key {
   font-weight: bold;
   margin-right: 10px;
@@ -208,12 +199,22 @@
   font-size: 0.8em;
 }
 @media only screen and (max-width: 990px) {
+  .header-dropdown {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
   .header-item-list {
     display: flex;
     flex-direction: column;
+    justify-content: center;
   }
 }
 @media only screen and (min-width: 990px) {
+  .header-dropdown {
+    display: flex;
+    flex-direction: row;
+  }
   .header-item-list {
     display: flex;
     flex-direction: row;

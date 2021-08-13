@@ -13,10 +13,11 @@ import { getDateAfter } from './date.js';
 import { useGetQuery, queryClient } from './data.js';
 
 
-function useGetAuthQuery(endpoint) {
+function useGetAuthQuery(endpoint, options) {
   return useGetQuery(
     endpoint,
     'auth', //global key for this file
+    options,
   )
 }
 
@@ -64,7 +65,7 @@ export function useCreateAccount(){
   }
 }
 
-export function useLogin(){
+export function useLogin(options = {}){
   let dispatch = useDispatch();
 
   const { mutateAsync, status, error } = useMutation((to_submit) => fetch(
@@ -74,11 +75,11 @@ export function useLogin(){
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify(to_submit),
     }).then(res => res.json()),
+    options,
   );
 
   return async ({email, password}) => {
     let to_submit = {email: email, password: password};
-    console.log("Submitting:", to_submit);
     let result;
     try {
       result = await mutateAsync(to_submit)
@@ -94,7 +95,6 @@ export function useLogin(){
       console.log("[!] Error logging in:", result.error);
       return false;
     }
-    console.log("Result:", result);
     if (result && result.accessToken && result.refreshToken && result.expiresIn) {
       dispatch(setAuthTokens({
         access_token: result.accessToken,
@@ -110,7 +110,7 @@ export function useLogin(){
 }
 
 export function useGetSessions() {
-  return useGetAuthQuery("auth/sessions/self");
+  return useGetAuthQuery("auth/sessions/self", {version: "v2"});
 }
 
 export function useDisableSession(){
@@ -134,35 +134,79 @@ export function useDisableSession(){
   return createMutationCall(mutationFn, "disabling session");
 }
 
-
-export function useResetPasswordWithPassword(){
+export function useAdminResetUserPassword(userId, options = {}){
   const header = useSelector(selectAuthHeader);
-  const mutationFn = useMutation(({to_submit}) => fetch(
-    config.backend_url + "auth/reset_password/password",
-    {
-      method: "POST",
-      headers: {
-        ...header,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(to_submit),
-    }).then(res => res.json()),
+  const mutationFn = useMutation(
+    ({to_submit}) => fetch(
+      config.backend_url + "auth/reset_password/admin",
+      {
+        method: "POST",
+        headers: {
+          ...header,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(to_submit),
+      }),
+    options,
   );
-  return createMutationCall(mutationFn, "resetting password with password");
+  return createMutationCall(mutationFn, "resetting password with admin priviledges");
 }
 
-export function useAdminResetUserPassword(){
+export function useDeleteUser(userId, options = {}) {
   const header = useSelector(selectAuthHeader);
-  const { mutateAsync, error } = useMutation(({to_submit}) => fetch(
-    config.backend_url + "auth/reset_password/admin",
-    {
-      method: "POST",
-      headers: {
-        ...header,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(to_submit),
-    }).then(res => res.json()),
+  const mutationFn = useMutation(
+    ({to_submit}) => fetch(
+      config.backend_url + "users/id/" + userId,
+      {
+        method: "DELETE",
+        headers: header,
+      }),
+    options,
   );
-  return createMutationCall(mutateAsync, error, "resetting password with admin priviledges");
+  return createMutationCall(mutationFn, "deleting user");
+}
+
+export function useCreateUser(options = {}) {
+  const header = useSelector(selectAuthHeader);
+  const mutationFn = useMutation(
+    ({to_submit}) => fetch(
+      config.backend_url + "users/create",
+      {
+        method: "POST",
+        headers: {
+          ...header,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(to_submit),
+      }),
+    options,
+  );
+  return createMutationCall(mutationFn, "creating user");
+}
+
+
+export function useGetAllUsers() {
+  return useGetAuthQuery("users/all", {version: "v2"});
+}
+
+export function useGetUser(id) {
+  return useGetAuthQuery("users/id/" + id, {version: "v2"});
+}
+
+export function usePatchUser(userId, options = {}) {
+  const header = useSelector(selectAuthHeader);
+  const mutationFn = useMutation(
+    ({to_submit}) => fetch(
+      config.backend_url + "users/id/" + userId,
+      {
+        method: "PATCH",
+        headers: {
+          ...header,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(to_submit),
+      }),
+    options,
+  );
+  return createMutationCall(mutationFn, "patching user");
 }

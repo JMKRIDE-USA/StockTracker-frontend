@@ -7,6 +7,7 @@ const inventorySlice = createSlice({
     categorySetId: undefined,
     CSSetId: undefined,
     partTypeCategories: undefined,
+    auxiliaryParts: undefined,
   },
   reducers: {
     setInventoryId: (state, action) => {
@@ -20,6 +21,12 @@ const inventorySlice = createSlice({
     },
     setPartTypeCategories: (state, action) => {
       state.partTypeCategories = action.payload
+    },
+    setAuxiliaryParts: (state, action) => {
+      state.auxiliaryParts = action.payload
+    },
+    setWithdrawAuxiliaryParts: (state, action) => {
+      state.withdrawAuxiliaryParts = action.payload
     },
     wipeDefaults: (state, _) => {
       state.inventoryId = undefined;
@@ -35,6 +42,8 @@ export const {
   setCSSetId,
   setPartTypeCategories,
   setPartTypeCategory,
+  setAuxiliaryParts,
+  setWithdrawAuxiliaryParts,
   wipeDefaults,
 } = inventorySlice.actions;
 
@@ -42,5 +51,7 @@ export const selectInventoryId = state => state.inventory.inventoryId;
 export const selectCategorySetId = state => state.inventory.categorySetId;
 export const selectCSSetId = state => state.inventory.CSSetId;
 export const selectPartTypeCategories = state => state.inventory.partTypeCategories;
+export const selectAuxiliaryParts = state => state.inventory.auxiliaryParts;
+export const selectWithdrawAuxiliaryParts = state => state.inventory.withdrawAuxiliaryParts;
 
 export default inventorySlice.reducer;

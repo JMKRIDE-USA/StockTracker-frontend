@@ -1,40 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { useLogin } from '../modules/auth.js';
-import { PageCard } from '../components/common.js';
+import { PageCard, DisableCover } from '../components/common.js';
+import { LoadingIcon } from '../components/loading.js';
+import { ResultIndicator } from '../components/result.js';
 
 
 function SignInForm() {
-  const login = useLogin();
 
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
 
+  const [submitting, setSubmitting] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState(undefined);
+  const login = useLogin({
+    onSettled: result => {
+      setSubmitting(false);
+      setSubmissionResult(!!result && !!result?.accessToken);
+    }
+  });
+  useEffect(() => {
+    if(submissionResult === undefined) {
+      return;
+    }
+    setTimeout(
+      () => setSubmissionResult(undefined),
+      (submissionResult ? 1000 : 5000)
+    )
+  }, [submissionResult, setSubmissionResult]);
+
   const onSubmit = async (event) => {
     event.preventDefault();
-    let success = await login({email, password});
-    console.log(success);
+    setSubmitting(true);
+    await login({email, password});
   }
 
   return (
-    <form onSubmit={onSubmit} className="sign-in-form form-group">
-      <h4 className="flex-align-center">Sign In</h4>
-      <input
-        className="form-control"
-        type="email" name="email"
-        onChange={(e) => setEmail(e.target.value)}
-        value={email}
-        placeholder="Email"
-      />
-      <input
-        className="form-control"
-        type="password" name="password"
-        onChange={(e) => setPassword(e.target.value)}
-        value={password}
-        placeholder="Password"
-       />
-      <button className="btn btn-primary flex-align-center sign-in-button">Sign In</button>
-    </form>
+    <PageCard style={{position: "relative"}}>
+      <form onSubmit={onSubmit} className="sign-in-form form-group">
+        <h4 className="flex-align-center">Sign In</h4>
+        <input
+          className="form-control"
+          type="email" name="email"
+          onChange={(e) => setEmail(e.target.value)}
+          value={email}
+          placeholder="Email"
+        />
+        <input
+          className="form-control"
+          type="password" name="password"
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+          placeholder="Password"
+         />
+        <button className="btn btn-primary flex-align-center sign-in-button">Sign In</button>
+      </form>
+      {(submitting || (submissionResult !== undefined)) &&
+        <DisableCover>
+          {submitting && <LoadingIcon size={50} color="white"/>}
+          {(submissionResult !== undefined) && 
+            <ResultIndicator dark result={submissionResult}/>
+          }
+        </DisableCover>
+      }
+    </PageCard>
   );
 }
 
@@ -49,9 +78,7 @@ function SignIn() {
           You are logged out. Please sign in again.
         </div>
       </PageCard>
-      <PageCard>
-        <SignInForm/>
-      </PageCard>
+      <SignInForm/>
     </div>
   )
 }

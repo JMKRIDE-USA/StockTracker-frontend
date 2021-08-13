@@ -11,6 +11,11 @@ import {
 
 import { InfoListFromObject } from '../lists.js';
 
+export const ClickableTextCell = ({value}) => {
+  const { text, link } = value;
+  return <a href={link} style={{color: "black"}}>{text}</a>
+}
+
 const EIOStyle = styled.div`
   display: flex;
   min-width: 100px;
@@ -55,6 +60,8 @@ export const ExpandableInfoObjectCell = ({value}) => {
 
 const Styles = styled.div`
   display: flex;
+  max-width: 94vw;
+  overflow-x: scroll;
   padding: 1rem;
   table {
     background-color: white;

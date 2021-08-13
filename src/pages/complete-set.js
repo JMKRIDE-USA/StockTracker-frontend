@@ -6,6 +6,7 @@ import { MdAdd } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 
 import { QueryLoader } from '../modules/data.js';
+import { WithdrawAuxiliaryPartsCheckbox } from '../components/forms/checkboxes.js';
 import { selectCSSetId } from '../redux/inventorySlice.js';
 import { useGetAllCS, useGetCSById } from '../modules/inventory.js';
 import { CSSetSelector } from '../components/selectors.js';
@@ -57,7 +58,7 @@ function CompleteSetInfo({completeSet, index=0}) {
     [history, completeSet._id],
   )
   return (
-    <PageCard key={index}>
+    <PageCard key={index} style={{maxWidth: "95vw"}}>
       <TitleRow>
         <CompleteSetIcon completeSet={completeSet}/>
         <h3>Complete Set: "{completeSet.name}" </h3>
@@ -71,15 +72,13 @@ function CompleteSetInfo({completeSet, index=0}) {
         <CompleteSetWithdrawalForm completeSet={completeSet}/>
         <CompleteSetDepositForm completeSet={completeSet}/>
       </FormRow>
-      <div style={{minWidth: "1000px"}}>
-        <PartsDisplay
-          parts={completeSet.allParts}
-          name={completeSet.name}
-          height={50}
-          partOccurance={completeSet.idOccurances}
-          title={false}
-        />
-      </div>
+      <PartsDisplay
+        parts={completeSet.allParts}
+        name={completeSet.name}
+        height={50}
+        partOccurance={completeSet.idOccurances}
+        title={false}
+      />
     </PageCard>
   );
 }
@@ -151,6 +150,7 @@ export default function CompleteSetPage() {
               Withdraw Custom Set
             </button>
           </div>
+          <WithdrawAuxiliaryPartsCheckbox/>
         </TitleCard>
         <QueryLoader query={allCSQuery} propName="completeSets" pageCard>
           <CompleteSetList/>

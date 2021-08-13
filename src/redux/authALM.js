@@ -20,6 +20,8 @@ import {
   setInventoryId,
   setCategorySetId,
   setPartTypeCategories,
+  setAuxiliaryParts,
+  setWithdrawAuxiliaryParts,
   setCSSetId,
 } from './inventorySlice.js';
 import config from '../config.js';
@@ -68,8 +70,10 @@ const AllALMs = {
             permissionLevelToAuthState(res.permissionLevel))
           );
           dispatch(setUserInfo(res));
-          if(res.settings?.partTypeCategories) {
-            dispatch(setPartTypeCategories(res.settings.partTypeCategories))
+          if(res.settings) {
+            dispatch(setPartTypeCategories(res.settings?.partTypeCategories))
+            dispatch(setAuxiliaryParts(res.settings?.auxiliaryParts))
+            dispatch(setWithdrawAuxiliaryParts(res.settings?.withdrawAuxiliaryParts))
           }
           if( !inventoryId) {
             dispatch(setInventoryId(res.defaultInventory));

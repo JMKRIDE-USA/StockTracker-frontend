@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -10,12 +10,13 @@ import { QueryLoader } from '../modules/data.js';
 import { TitleCard } from '../components/common.js';
 import { BackButton, DeleteButton } from '../components/buttons.js';
 import { CategorySelector, ColorSelector } from '../components/selectors.js';
+import { useGetResultIndicator } from '../components/result.js';
 
 
-const useGetStateList = (part) => ([
+const getStateList = (part) => ([
   {
     key: "name", label: "Name",
-    state: useState(part ? part.name : ""),
+    initialState: part ? part.name : "",
     component: (props) => (
       <input
         type="text" name="name"
@@ -27,7 +28,7 @@ const useGetStateList = (part) => ([
   },
   {
     key: "categoryIds", label: "Category",
-    state: useState(part
+    initialState: (part
       ? part.categories.map(c => ({value: c.category._id, label: c.category.name}))
       : []
     ),
@@ -36,7 +37,7 @@ const useGetStateList = (part) => ([
   },
   {
     key: "color", label: "Color",
-    state: useState(part ? {value: part.color, label: part.color} : ""),
+    initialState: (part ? ({value: part.color, label: part.color}) : {}),
     component: ColorSelector, formatFn: c => c.value,
   },
 ])
@@ -44,11 +45,11 @@ const useGetStateList = (part) => ([
 function PartCreationForm(){
   const useMakeSubmitFn = (options) =>
     useCreatePart(options)
-  let stateList = useGetStateList()
+  let stateList = getStateList()
   stateList.push(
     {
       key: "quantity", label: "Starting Quantity",
-      state: useState(0), componentStyle: {maxWidth: 80},
+      initialState: 0, componentStyle: {maxWidth: 80},
       component: (props) => (
         <input className="form-control" type="number" name="quantity" {...props}/>
       ),
@@ -70,18 +71,21 @@ function DeletePart({part}) {
     () => history.push('/part'),
     [history],
   )
-  const deletePart = useDeletePart(part._id);
+  const { setSubmitting, options, render } = useGetResultIndicator({
+    onSuccess: toAllParts,
+  });
+  const deletePart = useDeletePart(part._id, options);
   const onClick = () => {
+    setSubmitting(true);
     deletePart();
-    toAllParts();
   }
-  return <DeleteButton onClick={onClick}/>
+  return <><DeleteButton onClick={onClick}/>{render()}</>
 }
 
 function PartEditForm({part}){
   const useMakeSubmitFn = (options) =>
     usePatchPart(part._id, options)
-  const stateList = useGetStateList(part);
+  const stateList = getStateList(part);
   const history = useHistory()
   const viewPart  = useCallback(
     () => history.push('/part/' + part._id),

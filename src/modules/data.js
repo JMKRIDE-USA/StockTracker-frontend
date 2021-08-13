@@ -13,7 +13,7 @@ import config from '../config.js';
 export const queryClient = new QueryClient();
 
 
-export function useGetQuery(endpoint, key, options = {}) {
+export function useGetQuery(endpoint, key, { version = "v1", ...options } = {}) {
   const header = useSelector(selectAuthHeader);
   // caching invalidations from either
   const cache = Array.isArray(key) ? key.concat(endpoint) : [key, endpoint];
@@ -21,7 +21,7 @@ export function useGetQuery(endpoint, key, options = {}) {
     const query = useQuery(
       cache,
       () => fetch(
-        config.backend_url + endpoint,
+        (version === "v1" ? config.backend_url : config.backend_url_v2) + endpoint,
         {
           method: "GET",
           headers: header,
@@ -85,6 +85,12 @@ export function onQuerySuccess(query, thenFn, {name = "Resource", pageCard = fal
     query.status !== 'success' || 
     !Object.hasOwnProperty.call(query.data, 'result')
   ) {
+    console.log("[QueryLoader][" + name + "]",
+      {
+        status: query.status, error: JSON.stringify(query.error),
+        data: query.data,
+      },
+    )
     return (
       <OptionalCard pageCard={pageCard}>
         <h3 className="error-text">Error loading {name}!</h3>

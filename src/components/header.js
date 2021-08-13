@@ -13,7 +13,7 @@ import { selectAuthState } from '../redux/authSlice.js';
 export default function Header() {
   const authState = useSelector(selectAuthState);
   return (
-    <Navbar className="header" variant="dark" expand="lg" sticky="top">
+    <Navbar className="header" variant="dark" expand="xl" sticky="top">
       <Navbar.Brand href="/">
         <img
           src={logo}
@@ -22,7 +22,7 @@ export default function Header() {
          />
       </Navbar.Brand>
       <Navbar.Toggle className="header-toggle"/>
-      <Navbar.Collapse className="header-dropdown">
+      <Navbar.Collapse className="header-dropdown"> 
         <div className="header-item-list">
           <Nav.Link href="/">Categories</Nav.Link>
           <Nav.Link href="/completeset">Complete Sets</Nav.Link>
@@ -35,12 +35,14 @@ export default function Header() {
             Inventory:
             { authState ? <InventorySelector dark={true}/> : " Not Available." }
           </div>
-          <Nav.Link className="ml-auto" href="/settings">
-            <HiCog size={30} color="white"/>
-          </Nav.Link>
-          <Nav.Link className="ml-auto" href="/profile">
-            <HiUserCircle className="account-icon" size={40}/>
-          </Nav.Link>
+          <div className="flex-row">
+            <Nav.Link className="ml-auto" href="/settings">
+              <HiCog size={30} color="white"/>
+            </Nav.Link>
+            <Nav.Link className="ml-auto" href="/profile">
+              <HiUserCircle className="account-icon" size={40}/>
+            </Nav.Link>
+          </div>
         </div>
       </Navbar.Collapse>
     </Navbar>

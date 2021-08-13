@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 
 import { useHistory, useParams } from 'react-router-dom';
 
@@ -14,12 +14,13 @@ import {
   useDeleteCategory,
 } from '../modules/inventory.js';
 import { QueryLoader } from '../modules/data.js';
+import { useGetResultIndicator } from '../components/result.js';
 
 
-const useGetStateList = (category, parts) => ([
+const getStateList = (category, parts) => ([
   {
     key: "name", label: "Name",
-    state: useState(category ? category.name : ""),
+    initialState: category ? category.name : "",
     component: (props) => (
       <input
         type="text" name="name"
@@ -31,7 +32,7 @@ const useGetStateList = (category, parts) => ([
   },
   {
     key: "categorySetIds", label: "Category Sets",
-    state: useState(category
+    initialState: (category
       ? category.categorySets.map(c => (
         {value: c.categorySet?._id, label: c.categorySet?.name}
       )) : []
@@ -41,7 +42,7 @@ const useGetStateList = (category, parts) => ([
   },
   {
     key: "partIds", label: "Parts",
-    state: useState(parts
+    initialState: (parts
       ? parts.map(c => ({value: c._id, label: c.name}))
       : []
     ),
@@ -53,7 +54,7 @@ const useGetStateList = (category, parts) => ([
 function CreateCategoryCard() {
   const useMakeSubmitFn = (options) =>
     useCreateCategory(options);
-  const stateList = useGetStateList()
+  const stateList = getStateList()
 
   return (
     <ObjectForm
@@ -64,7 +65,7 @@ function CreateCategoryCard() {
 }
 
 function EditCategoryCard({category, parts}) {
-  const stateList = useGetStateList(category, parts);
+  const stateList = getStateList(category, parts);
   const useMakeSubmitFn = (options) =>
     usePatchCategory(category._id, options);
   const history = useHistory();
@@ -72,10 +73,13 @@ function EditCategoryCard({category, parts}) {
     () => history.push('/'),
     [history],
   )
-  const deleteCategory = useDeleteCategory(category._id);
+  const { setSubmitting, options, render } = useGetResultIndicator({
+    onSuccess: backToHome,
+  });
+  const deleteCategory = useDeleteCategory(category._id, options);
   const onClickDelete = () => {
+    setSubmitting(true);
     deleteCategory();
-    backToHome();
   }
 
   return (
@@ -86,7 +90,7 @@ function EditCategoryCard({category, parts}) {
       formStyle={{marginTop: 20}}
     >
       <BackButton onClick={backToHome}/>
-      <DeleteButton onClick={onClickDelete}/>
+      <DeleteButton onClick={onClickDelete}/>{render()}
     </ObjectForm>
   );
 }

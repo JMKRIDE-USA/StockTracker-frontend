@@ -41,6 +41,8 @@ import ReorderCategorySet from './pages/reorder-categoryset.js';
 import AllLogsPage from './pages/logs.js';
 import WithdrawCustomSetPage from './pages/withdraw-custom-cs.js';
 import SettingsPage from './pages/settings.js';
+import UserPage from './pages/user.js';
+import CreateUserPage from './pages/create-user.js';
 
 function PageSwitch() {
   return (
@@ -62,11 +64,16 @@ function PageSwitch() {
       <Route exact path="/reorder-csset/:id" component={ReorderCSSet}/>
       <Route exact path="/create-csset" component={CreateCSSet}/>
       <Route exact path="/edit-csset/:id" component={CreateCSSet}/>
+      <Route exact path="/categoryset/:id" component={Home}/>
       <Route exact path="/create-categoryset" component={CreateCategorySet}/>
       <Route exact path="/edit-categoryset/:id" component={CreateCategorySet}/>
       <Route exact path="/reorder-categoryset/:id" component={ReorderCategorySet}/>
       <Route exact path="/logs" component={AllLogsPage}/>
       <Route exact path="/settings" component={SettingsPage}/>
+      <Route exact path="/user" component={UserPage}/>
+      <Route exact path="/user/:id" component={UserPage}/>
+      <Route exact path="/create-user" component={CreateUserPage}/>
+      <Route exact path="/edit-user/:id" component={CreateUserPage}/>
       <Route exact path="/" component={Home}/>
       <Route component={NotFound}/>
     </Switch>

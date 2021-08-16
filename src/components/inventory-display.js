@@ -64,7 +64,7 @@ export function PartsDisplayChart({parts, setSelectedPart, partOccurance}) {
           maintainAspectRatio: false,
           plugins: {legend: {display: false}},
           scales: {
-            x: {grid: {offset: true}, min: minQuantity}
+            x: {grid: {offset: true}, min: minQuantity},
             y: {ticks: {autoskip: false}},
           }
         }}

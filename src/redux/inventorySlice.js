@@ -8,6 +8,8 @@ const inventorySlice = createSlice({
     CSSetId: undefined,
     partTypeCategories: undefined,
     auxiliaryParts: undefined,
+    withdrawAuxiliaryParts: undefined,
+    debug: undefined,
   },
   reducers: {
     setInventoryId: (state, action) => {
@@ -33,6 +35,9 @@ const inventorySlice = createSlice({
       state.categorySetId = undefined;
       state.CSSetId = undefined;
     },
+    setDebug: (state, action) => {
+      state.debug = action.payload
+    },
   },
 });
 
@@ -45,6 +50,7 @@ export const {
   setAuxiliaryParts,
   setWithdrawAuxiliaryParts,
   wipeDefaults,
+  setDebug,
 } = inventorySlice.actions;
 
 export const selectInventoryId = state => state.inventory.inventoryId;
@@ -53,5 +59,7 @@ export const selectCSSetId = state => state.inventory.CSSetId;
 export const selectPartTypeCategories = state => state.inventory.partTypeCategories;
 export const selectAuxiliaryParts = state => state.inventory.auxiliaryParts;
 export const selectWithdrawAuxiliaryParts = state => state.inventory.withdrawAuxiliaryParts;
+
+export const selectDebug = state => state.inventory.debug;
 
 export default inventorySlice.reducer;

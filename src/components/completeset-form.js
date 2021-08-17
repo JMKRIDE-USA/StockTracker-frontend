@@ -10,7 +10,7 @@ export const getStateList = ({completeSet, temporary = false} = {}) => {
   const getState = (label, key, type) => ({
     key, label, initialState: (completeSet 
         ? ({value: completeSet[key]._id, label: completeSet[key].name}) 
-        : undefined
+        : "" 
     ), component: (props) => <SinglePartSelector partType={type} {...props}/>,
     formatFn: c => c?.value,
   })

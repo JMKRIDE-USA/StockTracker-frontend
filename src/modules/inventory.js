@@ -13,7 +13,7 @@ import {
   wipeDefaults,
 } from '../redux/inventorySlice.js';
 import config from '../config.js';
-import { createMutationCall } from './data.js';
+import { mergeQueryOptions, createMutationCall } from './data.js';
 
 import { useGetQuery, queryClient } from './data.js';
 
@@ -96,7 +96,7 @@ export function useCreatePart(options) {
         headers: {...header, 'Content-Type': 'application/json'},
         body: JSON.stringify(to_submit),
       }),
-    {...options, enabled: !!inventoryId}
+    options,
   );
   return createMutationCall(mutationFn, "searching all parts")
 }
@@ -214,13 +214,13 @@ export const useAdjustPartQuantity = ({partId}, options = {}) => {
         headers: {...header, 'Content-Type': 'application/json'},
         body: JSON.stringify(to_submit),
       }
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => {
         queryClient.invalidateQueries('quantity-inventory')
         queryClient.invalidateQueries('cs-inventory')
       },
-    }
+    })
   );
   return createMutationCall(mutationFn, "adjusting part quantity");
 }
@@ -243,10 +243,10 @@ export const useSetCategoryOrder = (categoryId, options = {}) => {
         method: "POST", headers: {...header, 'Content-Type': 'application/json'},
         body: JSON.stringify(to_submit),
       }
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => queryClient.invalidateQueries('structure-inventory'),
-    }
+    }),
   );
   return createMutationCall(mutationFn, "persisting category part order");
 }
@@ -260,10 +260,10 @@ export const useSetCategorySetOrder = (categorySetId, options = {}) => {
         method: "POST", headers: {...header, 'Content-Type': 'application/json'},
         body: JSON.stringify(to_submit),
       }
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => queryClient.invalidateQueries('structure-inventory'),
-    }
+    }),
   );
   return createMutationCall(mutationFn, "persisting category set order");
 }
@@ -298,12 +298,12 @@ export const useDeleteCS = (id, options = {}) => {
         method: "DELETE",
         headers: header,
       }
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => {
         queryClient.invalidateQueries('cs-inventory')
       },
-    }
+    }),
   );
   return createMutationCall(mutationFn, "deleting completeset");
 }
@@ -321,13 +321,13 @@ export const useAdjustCompleteSetQuantity = ({completeSetId}, options = {}) => {
         headers: {...header, 'Content-Type': 'application/json'},
         body: JSON.stringify(to_submit),
       }
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => {
         queryClient.invalidateQueries('quantity-inventory')
         queryClient.invalidateQueries('cs-inventory')
       },
-    }
+    }),
   );
   return createMutationCall(mutationFn, "adjusting completeset quantity");
 }
@@ -342,12 +342,12 @@ export const useCreateCompleteSet = (options = {}) => {
         headers: {...header, 'Content-Type': 'application/json'},
         body: JSON.stringify(to_submit),
       }
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => {
         queryClient.invalidateQueries('cs-inventory')
       },
-    }
+    })
   );
   return createMutationCall(mutationFn, "creating complete set");
 }
@@ -363,12 +363,12 @@ export const useWithdrawCustomCompleteSet = (options = {}) => {
         headers: {...header, 'Content-Type': 'application/json'},
         body: JSON.stringify(to_submit),
       }
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => {
         queryClient.invalidateQueries('quantity-inventory')
       },
-    }
+    }),
   );
   return createMutationCall(mutationFn, "withdrawing custom complete set");
 }
@@ -383,12 +383,12 @@ export const usePatchCompleteSet = (completeSetId, options = {}) => {
         headers: {...header, 'Content-Type': 'application/json'},
         body: JSON.stringify(to_submit),
       }
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => {
         queryClient.invalidateQueries('cs-inventory')
       },
-    }
+    }),
   );
   return createMutationCall(mutationFn, "patching complete set");
 }
@@ -402,10 +402,10 @@ export const useSetCSSetCSOrder = (CSSetId, options = {}) => {
         method: "POST", headers: {...header, 'Content-Type': 'application/json'},
         body: JSON.stringify(to_submit),
       }
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => queryClient.invalidateQueries('structure-inventory'),
-    }
+    }),
   );
   return createMutationCall(mutationFn, "persisting CSSet CS order");
 }
@@ -419,13 +419,13 @@ export const useCreateCSSet = (options = {}) => {
         method: "POST", headers: {...header, 'Content-Type': 'application/json'},
         body: JSON.stringify(to_submit),
       }
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => {
         queryClient.invalidateQueries('structure-inventory');
         queryClient.invalidateQueries('cs-inventory');
       },
-    },
+    }),
   );
   return createMutationCall(mutationFn, "creating CS Set");
 }
@@ -439,12 +439,12 @@ export const usePatchCSSet = (CSSetId, options = {}) => {
         method: "PATCH", headers: {...header, 'Content-Type': 'application/json'},
         body: JSON.stringify(to_submit),
       }
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => {
         queryClient.invalidateQueries('cs-inventory');
       },
-    },
+    }),
   );
   return createMutationCall(mutationFn, "patching CS Set");
 }
@@ -458,14 +458,14 @@ export const useDeleteCSSet = (CSSetId, options = {}) => {
       {
         method: "DELETE", headers: header,
       }
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => {
         queryClient.invalidateQueries('cs-inventory');
         dispatch(wipeDefaults());
         dispatch(fetchAuthRequest());
       },
-    },
+    }),
   );
   return createMutationCall(mutationFn, "deleting CS Set");
 }
@@ -479,12 +479,12 @@ export const useCreateCategorySet = (options = {}) => {
         method: "POST", headers: {...header, 'Content-Type': 'application/json'},
         body: JSON.stringify(to_submit),
       }
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => {
         queryClient.invalidateQueries('structure-inventory');
       },
-    },
+    }),
   );
   return createMutationCall(mutationFn, "creating Category Set");
 }
@@ -498,12 +498,12 @@ export const usePatchCategorySet = (categorySetId, options = {}) => {
         method: "PATCH", headers: {...header, 'Content-Type': 'application/json'},
         body: JSON.stringify(to_submit),
       }
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => {
         queryClient.invalidateQueries('structure-inventory');
       },
-    },
+    }),
   );
   return createMutationCall(mutationFn, "patching Category Set");
 }
@@ -515,14 +515,14 @@ export const useDeleteCategorySet = (categorySetId, options = {}) => {
     ({to_submit}) => fetch(
       config.backend_url + "categorySet/id/" + categorySetId,
       {method: "DELETE", headers: header},
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => {
         queryClient.invalidateQueries('structure-inventory');
         dispatch(wipeDefaults());
         dispatch(fetchAuthRequest());
       },
-    },
+    }),
   );
   return createMutationCall(mutationFn, "deleting category Set");
 }
@@ -536,12 +536,12 @@ export const usePatchCategory = (categoryId, options = {}) => {
         method: "PATCH", headers: {...header, 'Content-Type': 'application/json'},
         body: JSON.stringify(to_submit),
       }
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => {
         queryClient.invalidateQueries('structure-inventory');
       },
-    },
+    }),
   );
   return createMutationCall(mutationFn, "patching category");
 }
@@ -552,12 +552,12 @@ export const useDeleteCategory = (categoryId, options = {}) => {
     ({to_submit}) => fetch(
       config.backend_url + "category/id/" + categoryId,
       {method: "DELETE", headers: header},
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => {
         queryClient.invalidateQueries('structure-inventory');
       },
-    },
+    }),
   );
   return createMutationCall(mutationFn, "deleting category");
 }
@@ -572,17 +572,17 @@ export const useCreateCategory = (options = {}) => {
         headers: {...header, 'Content-Type': 'application/json'},
         body: JSON.stringify(to_submit),
       },
-    ), {
-      ...options,
+    ),
+    mergeQueryOptions(options, {
       onSuccess: async () => {
         queryClient.invalidateQueries('structure-inventory');
       },
-    },
+    }),
   );
   return createMutationCall(mutationFn, "creating category");
 }
 
-export const useSetPartTypeCategories = (options = {}) => {
+export const useSetUserSetting = (key, options = {}) => {
   const header = useSelector(selectAuthHeader);
   const userId = useSelector(selectUserId);
   const mutationFn = useMutation(
@@ -591,48 +591,10 @@ export const useSetPartTypeCategories = (options = {}) => {
       {
         method: "POST",
         headers: {...header, 'Content-Type': 'application/json'},
-        body: JSON.stringify({partTypeCategories: to_submit}),
+        body: JSON.stringify({[key]: to_submit}),
       },
-    ), {
-      ...options,
-      enabled: !!userId,
-    },
+    ),
+    options,
   );
-  return createMutationCall(mutationFn, "setting part type categories");
-}
-export const useSetAuxiliaryParts = (options = {}) => {
-  const header = useSelector(selectAuthHeader);
-  const userId = useSelector(selectUserId);
-  const mutationFn = useMutation(
-    ({to_submit}) => fetch(
-      config.backend_url + "user-settings/user/id/" + userId,
-      {
-        method: "POST",
-        headers: {...header, 'Content-Type': 'application/json'},
-        body: JSON.stringify({auxiliaryParts: to_submit}),
-      },
-    ), {
-      ...options,
-      enabled: !!userId,
-    },
-  );
-  return createMutationCall(mutationFn, "setting auxiliary parts");
-}
-export const useSetWithdrawAuxiliary = (options = {}) => {
-  const header = useSelector(selectAuthHeader);
-  const userId = useSelector(selectUserId);
-  const mutationFn = useMutation(
-    ({to_submit}) => fetch(
-      config.backend_url + "user-settings/user/id/" + userId,
-      {
-        method: "POST",
-        headers: {...header, 'Content-Type': 'application/json'},
-        body: JSON.stringify({withdrawAuxiliaryParts: to_submit}),
-      },
-    ), {
-      ...options,
-      enabled: !!userId,
-    },
-  );
-  return createMutationCall(mutationFn, "setting withdraw auxiliary parts");
+  return createMutationCall(mutationFn, "setting user setting '" + key + "'");
 }

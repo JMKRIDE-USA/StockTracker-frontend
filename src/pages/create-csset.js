@@ -54,16 +54,14 @@ function EditCSSetCard({CSSet, completeSets}) {
     () => history.push('/completeset'),
     [history],
   )
-  const deleteCSSet = useDeleteCSSet(CSSet._id);
-  const onClickDelete = () => {
-    deleteCSSet();
-    backToCompleteSets();
-  }
+  const useMakeDeleteSubmitFn = (options) => useDeleteCSSet(CSSet._id, options);
 
   return (
-    <ObjectForm {...{stateList, useMakeSubmitFn, buttonText: "Submit"}}>
+    <ObjectForm {...{
+      stateList, useMakeSubmitFn, buttonText: "Submit", clearStateOnSubmit: false,
+    }}>
       <BackButton onClick={backToCompleteSets}/>
-      <DeleteButton onClick={onClickDelete}/>
+      <DeleteButton useMakeSubmitFn={useMakeDeleteSubmitFn} onSuccess={backToCompleteSets}/>
     </ObjectForm>
   );
 }

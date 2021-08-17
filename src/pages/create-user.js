@@ -96,6 +96,7 @@ function EditUserForm({user}){
     <ObjectForm
       formStyle={{marginTop: 15}}
       buttonText="Save"
+      clearStateOnSubmit={false}
       {...{stateList, useMakeSubmitFn, preProcessData}}
     >
       <BackButton onClick={backToUser}/>

@@ -23,6 +23,7 @@ import {
   setAuxiliaryParts,
   setWithdrawAuxiliaryParts,
   setCSSetId,
+  setDebug,
 } from './inventorySlice.js';
 import config from '../config.js';
 import { getDateAfter, hasExpired, needsRefresh } from '../modules/date.js';
@@ -74,6 +75,7 @@ const AllALMs = {
             dispatch(setPartTypeCategories(res.settings?.partTypeCategories))
             dispatch(setAuxiliaryParts(res.settings?.auxiliaryParts))
             dispatch(setWithdrawAuxiliaryParts(res.settings?.withdrawAuxiliaryParts))
+            dispatch(setDebug(!!res.settings?.debug))
           }
           if( !inventoryId) {
             dispatch(setInventoryId(res.defaultInventory));

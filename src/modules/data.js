@@ -8,6 +8,7 @@ import { QueryClient } from 'react-query';
 import { OptionalCard } from '../components/common.js';
 import { InfoListFromObject } from '../components/lists.js';
 import { selectAuthHeader } from '../redux/authSlice.js';
+import { selectDebug } from '../redux/inventorySlice.js';
 import config from '../config.js';
 
 export const queryClient = new QueryClient();
@@ -15,8 +16,11 @@ export const queryClient = new QueryClient();
 
 export function useGetQuery(endpoint, key, { version = "v1", ...options } = {}) {
   const header = useSelector(selectAuthHeader);
+  const debug = useSelector(selectDebug);
+  const enabled = options?.enabled !== undefined ? options.enabled : true;
   // caching invalidations from either
   const cache = Array.isArray(key) ? key.concat(endpoint) : [key, endpoint];
+  if (debug && enabled) console.log("[Debug][GET][" + version + "][" + endpoint + "] Loading...")
   try {
     const query = useQuery(
       cache,
@@ -41,7 +45,8 @@ export function useGetQuery(endpoint, key, { version = "v1", ...options } = {}) 
       );
       return query;
     }
-      return query;
+    if (debug && enabled) console.log("[Debug][GET][" + version + "][" + endpoint + "] Success.")
+    return query;
   } catch (error) {
     console.log("[!] Error fetching", key, "endpoint \"", endpoint, "\":", error);
     return { data: {}, error: error, status: 'error'}
@@ -85,7 +90,8 @@ export function onQuerySuccess(query, thenFn, {name = "Resource", pageCard = fal
     query.status !== 'success' || 
     !Object.hasOwnProperty.call(query.data, 'result')
   ) {
-    console.log("[QueryLoader][" + name + "]",
+    console.log(query);
+    console.log("[QueryLoader][Loading: " + name + "]",
       {
         status: query.status, error: JSON.stringify(query.error),
         data: query.data,
@@ -123,4 +129,24 @@ export function QueryLoader({query, propName, pageCard, children, ...props}) {
       return child;
     });
   }, {name: propName, pageCard});
+}
+
+/*
+ * sometimes various middlewares will do naive {...options, key: value} merging
+ *  which can overwrite functions. This will do naive merge, and for whitelisted
+ *  function option keys, will execute both functions
+ */
+export function mergeQueryOptions(...optionsList) {
+  let result = {};
+  optionsList.forEach(options => Object.entries(options).forEach(([key, value]) => {
+    if(result?.key && ["onMutate", "onSuccess", "onError", "onSettled"].includes(result.key)) {
+      result[key] = (...queryResults) => {
+        result[key](...queryResults);
+        value(...queryResults);
+      }
+    } else {
+      result = {...result, [key]: value}
+    }
+  }));
+  return result;
 }

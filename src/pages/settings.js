@@ -14,8 +14,7 @@ import {
 import { selectAuxiliaryParts, selectPartTypeCategories } from '../redux/inventorySlice.js';
 import {
   useGetAllParts,
-  useSetPartTypeCategories,
-  useSetAuxiliaryParts,
+  useSetUserSetting,
   useGetAllCategories
 } from '../modules/inventory.js';
 import { QueryLoader } from '../modules/data.js';
@@ -24,7 +23,7 @@ import { ObjectForm } from '../components/object-form.js';
 import { SelectorLoader } from '../redux/loader.js';
 import { LoadingIcon } from '../components/loading.js';
 import { ResultIndicator } from '../components/result.js';
-import { WithdrawAuxiliaryPartsCheckbox } from '../components/forms/checkboxes.js';
+import { DebugCheckbox, WithdrawAuxiliaryPartsCheckbox } from '../components/forms/checkboxes.js';
 
 const InventorySelectorStyle = styled.div`
   flex-direction: column;
@@ -76,7 +75,8 @@ function InventorySettings() {
 function PartTypeCategorySelectorForm({categories, partTypeCategories}) {
   const dispatch = useDispatch();
   const useMakeSubmitFn = (options) => 
-    useSetPartTypeCategories(
+    useSetUserSetting(
+      'partTypeCategories',
       {...options, onSuccess: () => {
         dispatch(fetchAuthRequest());
       }}
@@ -104,7 +104,8 @@ function PartTypeCategorySelectorForm({categories, partTypeCategories}) {
   return (
     <ObjectForm {...{
       useMakeSubmitFn, stateList, 
-      buttonText: "Save", formStyle: {marginTop: 25}
+      buttonText: "Save", formStyle: {marginTop: 25},
+      clearStateOnSubmit: false,
     }}>
       <h3 style={{position: "absolute", top: 0}}>Part Type Categories</h3>
       <div style={{maxWidth: 400}}>
@@ -191,13 +192,16 @@ function LoadedAuxiliaryPartSettings({auxiliaryParts, parts}) {
     )
   }, [submissionResult, setSubmissionResult]);
   const dispatch = useDispatch();
-  const submitFn = useSetAuxiliaryParts({
-    onSettled: result => {
-      setSubmitting(false);
-      setSubmissionResult(result.ok && result.status === 201);
-    }, 
-    onSuccess: () => dispatch(fetchAuthRequest()),
-  });
+  const submitFn = useSetUserSetting(
+    'auxiliaryParts',
+    {
+      onSettled: result => {
+        setSubmitting(false);
+        setSubmissionResult(result.ok && result.status === 201);
+      }, 
+      onSuccess: () => dispatch(fetchAuthRequest()),
+    }
+  );
   const onSubmit = e => {
     e.preventDefault();
     setSubmitting(true);
@@ -285,7 +289,9 @@ function AuxiliaryPartSettings() {
 export default function SettingsPage() {
   return (
     <div className="page">
-      <TitleCard title="StockTracker Settings"/>
+      <TitleCard title="StockTracker Settings">
+        <DebugCheckbox/>
+      </TitleCard>
       <InventorySettings/>
       <PartTypeSettings/>
       <AuxiliaryPartSettings/>

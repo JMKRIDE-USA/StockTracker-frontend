@@ -37,16 +37,12 @@ function CompleteSetEditForm({completeSet}) {
     () => history.push('/completeset'),
     [history],
   )
-  const deleteCS = useDeleteCS(completeSet._id);
-  const onClickDelete = () => {
-    deleteCS();
-    backToCompleteSets();
-  }
+  const useMakeDeleteFn = useDeleteCS(completeSet._id);
   const allPartsQuery = useGetAllParts();
   const FormChild = ({formState}) => (
     <>
       <BackButton onClick={backToCompleteSets}/>
-      <DeleteButton onClick={onClickDelete}/>
+      <DeleteButton useMakeSubmitFn={useMakeDeleteFn} onSuccess={backToCompleteSets}/>
       <QueryLoader query={allPartsQuery} propName="parts">
         <FakeCompleteSetIcon formState={formState}/>
       </QueryLoader>
@@ -58,6 +54,7 @@ function CompleteSetEditForm({completeSet}) {
   return (
     <ObjectForm {...{
       useMakeSubmitFn, stateList, buttonText: "Save",
+      clearStateOnSubmit: false,
       formStyle: {marginTop: 100}, forwardFormState: true,
     }}>
       <FormChild/>

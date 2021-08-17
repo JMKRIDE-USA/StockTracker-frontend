@@ -56,18 +56,17 @@ function EditCategorySetCard({categorySet, categories}) {
     () => history.push('/'),
     [history],
   )
-  const deleteCategorySet = useDeleteCategorySet(categorySet._id);
-  const onClickDelete = () => {
-    deleteCategorySet();
-    backToHome();
-  }
+  const useMakeDeleteFn = (options) => useDeleteCategorySet(categorySet._id, options);
 
   return (
     <ObjectForm 
-      {...{useMakeSubmitFn, stateList, buttonText: "Save", formStyle: {marginTop: 20}}}
+      {...{
+        useMakeSubmitFn, stateList, buttonText: "Save", formStyle: {marginTop: 20},
+        clearStateOnSubmit: false,
+      }}
     >
       <BackButton onClick={backToHome}/>
-      <DeleteButton onClick={onClickDelete}/>
+      <DeleteButton useMakeSubmitFn={useMakeDeleteFn} onSuccess={backToHome}/>
     </ObjectForm>
   );
 }

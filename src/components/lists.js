@@ -24,7 +24,7 @@ export const InfoListFromObject = ({data, ellipses=false, wide=false}) => {
         <div className="key">
           { key }:
         </div>
-        <div className="value" style={{maxWidth: wide ? 700 : 450}}>
+        <div className="value" style={{overflowWrap: "break-word", maxWidth: wide ? 700 : 450}}>
           { ! value 
             ? "<unknown>"
             : typeof value === 'string'

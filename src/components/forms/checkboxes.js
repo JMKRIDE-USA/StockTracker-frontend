@@ -5,13 +5,13 @@ import { useDispatch } from 'react-redux';
 
 import { fetchAuthRequest } from '../../redux/authSlice.js'
 import { SelectorLoader } from '../../redux/loader.js';
-import { selectWithdrawAuxiliaryParts } from '../../redux/inventorySlice.js';
-import { useSetWithdrawAuxiliary } from '../../modules/inventory.js'
+import { selectDebug, selectWithdrawAuxiliaryParts } from '../../redux/inventorySlice.js';
+import { useSetUserSetting } from '../../modules/inventory.js'
 import { LoadingIcon } from '../../components/loading.js';
 import { ResultIndicator } from '../../components/result.js';
 
 
-const WAPStyle = styled.div`
+const CheckboxStyle = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -20,13 +20,15 @@ const WAPStyle = styled.div`
     margin-right: 10px;
   }
   & > input {
-    height: 20px;
+    height: 25px;
     width: 20px;
+  }
+  & > .result {
   }
 `
 
-function LoadedWAPCheckbox({withdrawAuxiliaryParts}) {
-  const [checked, setChecked] = useState(withdrawAuxiliaryParts)
+function Checkbox({useMakeSubmitFn, initialState, label}) {
+  const [checked, setChecked] = useState(initialState)
   const [submitting, setSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState(undefined);
   useEffect(() => {
@@ -41,7 +43,7 @@ function LoadedWAPCheckbox({withdrawAuxiliaryParts}) {
     )
   }, [submissionResult, setSubmissionResult]);
   const dispatch = useDispatch();
-  const setWAP = useSetWithdrawAuxiliary({
+  const submitFn = useMakeSubmitFn({
     onSettled: result => {
       setSubmitting(false);
       setSubmissionResult(result.ok && result.status === 201);
@@ -51,21 +53,34 @@ function LoadedWAPCheckbox({withdrawAuxiliaryParts}) {
   const onChange = e => {
     setSubmitting(true);
     setChecked(e.target.checked);
-    setWAP(e.target.checked);
+    submitFn(e.target.checked);
   }
   return (
-    <WAPStyle>
-      <label htmlFor="WAP">Withdraw Auxiliary Parts:</label>
-      <input type="checkbox" name="WAP" checked={checked} onChange={onChange}/>
+    <CheckboxStyle>
+      <label htmlFor="cb">{label}:</label>
+      <input type="checkbox" name="cb" checked={checked} onChange={onChange}/>
       {(submitting || (submissionResult !== undefined)) &&
-        <div>
+        <div className="result">
           {submitting && <LoadingIcon size={15} color="black"/>}
           {(submissionResult !== undefined) && 
-            <ResultIndicator dark result={submissionResult}/>
+            <ResultIndicator result={submissionResult}/>
           }
         </div>
       }
-    </WAPStyle>
+    </CheckboxStyle>
+  )
+}
+
+const LoadedWAPCheckbox = ({withdrawAuxiliaryParts}) => {
+  const useMakeSubmitFn = (options) => useSetUserSetting(
+    'withdrawAuxiliaryParts', options
+  );
+  return (
+    <Checkbox
+      useMakeSubmitFn={useMakeSubmitFn}
+      initialState={withdrawAuxiliaryParts}
+      label={"Withdraw Auxiliary Parts"}
+    />
   )
 }
 
@@ -76,6 +91,28 @@ export function WithdrawAuxiliaryPartsCheckbox() {
       propName="withdrawAuxiliaryParts"
     >
       <LoadedWAPCheckbox/>
+    </SelectorLoader>
+  );
+}
+const LoadedDebugCheckbox = ({debug}) => {
+  const useMakeSubmitFn = (options) => 
+    useSetUserSetting('debug', options);
+  return (
+    <Checkbox
+      useMakeSubmitFn={useMakeSubmitFn}
+      initialState={debug}
+      label={"Debug Mode"}
+    />
+  )
+}
+
+export function DebugCheckbox() {
+  return (
+    <SelectorLoader
+      selectorFn={selectDebug}
+      propName="debug"
+    >
+      <LoadedDebugCheckbox/>
     </SelectorLoader>
   );
 }

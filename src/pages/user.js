@@ -10,7 +10,6 @@ import { ISOToReadableString } from '../modules/date.js';
 import { AllUserTable } from '../components/tables/users.js';
 import { permissionLevelToAuthState, authStateToString } from '../constants.js';
 import { useDeleteUser } from '../modules/auth.js';
-import { useGetResultIndicator } from '../components/result.js';
 import { CreateButton, DeleteButton, BackButton } from '../components/buttons.js';
 
 function UserInfoCard({user}) {
@@ -23,14 +22,7 @@ function UserInfoCard({user}) {
     () => history.push('/edit-user/' + user._id),
     [history, user]
   );
-  const { setSubmitting, options, render } = useGetResultIndicator({
-    onSuccess: backToUsers,
-  });
-  const deleteUser = useDeleteUser(user._id, options);
-  const onDeleteClick = () => {
-    setSubmitting(true);
-    deleteUser();
-  }
+  const useMakeDeleteFn = (options) => useDeleteUser(user._id, options);
 
   return (
     <PageCard style={{position: "relative"}}>
@@ -43,8 +35,7 @@ function UserInfoCard({user}) {
       }}/>
       <div className="flex-row">
         <div className="flex-row" style={{marginRight: 5}}>
-          <DeleteButton onClick={onDeleteClick}/>
-          {render()}
+          <DeleteButton useMakeSubmitFn={useMakeDeleteFn} onSuccess={backToUsers}/>
         </div>
         <button className="btn btn-primary" onClick={editUser}>Edit</button>
       </div>

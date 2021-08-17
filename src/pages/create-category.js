@@ -14,7 +14,6 @@ import {
   useDeleteCategory,
 } from '../modules/inventory.js';
 import { QueryLoader } from '../modules/data.js';
-import { useGetResultIndicator } from '../components/result.js';
 
 
 const getStateList = (category, parts) => ([
@@ -73,24 +72,17 @@ function EditCategoryCard({category, parts}) {
     () => history.push('/'),
     [history],
   )
-  const { setSubmitting, options, render } = useGetResultIndicator({
-    onSuccess: backToHome,
-  });
-  const deleteCategory = useDeleteCategory(category._id, options);
-  const onClickDelete = () => {
-    setSubmitting(true);
-    deleteCategory();
-  }
-
+  const useMakeDeleteFn = (options) => useDeleteCategory(category._id, options);
   return (
     <ObjectForm
       stateList={stateList}
       buttonText="Save"
+      clearStateOnSubmit={false}
       useMakeSubmitFn={useMakeSubmitFn}
       formStyle={{marginTop: 20}}
     >
       <BackButton onClick={backToHome}/>
-      <DeleteButton onClick={onClickDelete}/>{render()}
+      <DeleteButton useMakeSubmitFn={useMakeDeleteFn} onSuccess={backToHome}/>
     </ObjectForm>
   );
 }

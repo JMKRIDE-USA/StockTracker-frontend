@@ -20,7 +20,7 @@ export function ResultIndicator({result, dark = false, errorText = ""}) {
   )
 }
 
-export function useGetResultIndicator({onSuccess = () => {}} = {}) {
+export function useGetResultIndicator({successStatus = 201, onSuccess = () => {}} = {}) {
   const [submitting, setSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState(undefined);
   const [errorText, setErrorText] = useState("")
@@ -45,7 +45,9 @@ export function useGetResultIndicator({onSuccess = () => {}} = {}) {
     setSubmitting, 
     options: {onSettled: result => {
       setSubmitting(false);
-      setSubmissionResult(result.ok && result.status === 201);
+      let success = result.ok && result.status === successStatus;
+      if(!success) console.log("[!][ResultIndicator] Failed Result:", result);
+      setSubmissionResult(success);
     }},
     render: () => (
       <>

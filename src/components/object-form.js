@@ -14,14 +14,24 @@ export const TextComponent = (placeholder, moreProps = {}) => (props) => (
 
 export function ObjectForm({
   useMakeSubmitFn, stateList, buttonText, preProcessData, formStyle={},
-  forwardFormState=false, children,
+  clearStateOnSubmit=true, forwardFormState=false, children,
 }){ 
   const [submitting, setSubmitting] = useState(false);
   const [submissionResult, setSubmissionResult] = useState(undefined);
   const [errorText, setErrorText] = useState("")
+
+  let initialState = {}
+  stateList.forEach(item => initialState[item.key] = item.initialState)
+  const [state, setState] = useState(initialState);
+
   useEffect(() => {
     if(submissionResult === undefined) {
       return;
+    }
+    if(submissionResult && clearStateOnSubmit) {
+      let initialState = {}
+      stateList.forEach(item => initialState[item.key] = item.initialState)
+      setState(initialState);
     }
     setTimeout(
       () => {
@@ -30,14 +40,18 @@ export function ObjectForm({
       },
       (submissionResult ? 1000 : 5000)
     )
-  }, [submissionResult, setSubmissionResult]);
+  }, [
+    stateList,
+    setState,
+    submissionResult,
+    setSubmissionResult,
+    clearStateOnSubmit
+  ]);
+
   const submitFn = useMakeSubmitFn({onSettled: result => {
     setSubmitting(false);
     setSubmissionResult(result?.ok && result.status === 201);
   }});
-  let initialState = {}
-  stateList.forEach(item => initialState[item.key] = item.initialState)
-  const [state, setState] = useState(initialState);
 
   const isEmpty = item => {
     const itemState = state[item.key];

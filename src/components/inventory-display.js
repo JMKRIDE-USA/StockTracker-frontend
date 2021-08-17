@@ -65,7 +65,7 @@ export function PartsDisplayChart({parts, setSelectedPart, partOccurance}) {
           plugins: {legend: {display: false}},
           scales: {
             x: {grid: {offset: true}, min: minQuantity},
-            y: {ticks: {autoskip: false}},
+            y: {ticks: {crossAlign: 'far', autoskip: false}},
           }
         }}
         getElementAtEvent={getElementAtEvent}
@@ -96,7 +96,7 @@ export function PartsDisplay({
   initialSelectedPart, ...props
 }) {
   const [selectedPart, setSelectedPart] = useState(initialSelectedPart);
-  let cardHeight = Math.max((parts.length * (height ? height : 25)), 110) 
+  let cardHeight = Math.max((parts.length * (height ? height : 26)), 110) 
   return (
     <PartsDisplayStyle>
       {title &&

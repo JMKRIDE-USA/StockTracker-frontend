@@ -10,7 +10,6 @@ import { QueryLoader } from '../modules/data.js';
 import { TitleCard } from '../components/common.js';
 import { BackButton, DeleteButton } from '../components/buttons.js';
 import { CategorySelector, ColorSelector } from '../components/selectors.js';
-import { useGetResultIndicator } from '../components/result.js';
 
 
 const getStateList = (part) => ([
@@ -71,15 +70,8 @@ function DeletePart({part}) {
     () => history.push('/part'),
     [history],
   )
-  const { setSubmitting, options, render } = useGetResultIndicator({
-    onSuccess: toAllParts,
-  });
-  const deletePart = useDeletePart(part._id, options);
-  const onClick = () => {
-    setSubmitting(true);
-    deletePart();
-  }
-  return <><DeleteButton onClick={onClick}/>{render()}</>
+  const useMakeSubmitFn = (options) => useDeletePart(part._id, options);
+  return <DeleteButton useMakeSubmitFn={useMakeSubmitFn} onSuccess={toAllParts}/>
 }
 
 function PartEditForm({part}){
@@ -95,6 +87,7 @@ function PartEditForm({part}){
     <ObjectForm
       useMakeSubmitFn={useMakeSubmitFn}
       buttonText="Submit"
+      clearStateOnSubmit={false}
       formStyle={{marginTop: 20}}
       stateList={stateList}
     >

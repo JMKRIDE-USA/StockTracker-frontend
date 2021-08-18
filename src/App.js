@@ -43,6 +43,7 @@ import WithdrawCustomSetPage from './pages/withdraw-custom-cs.js';
 import SettingsPage from './pages/settings.js';
 import UserPage from './pages/user.js';
 import CreateUserPage from './pages/create-user.js';
+import CreateInventoryPage from './pages/create-inventory.js';
 
 function PageSwitch() {
   return (
@@ -74,6 +75,8 @@ function PageSwitch() {
       <Route exact path="/user/:id" component={UserPage}/>
       <Route exact path="/create-user" component={CreateUserPage}/>
       <Route exact path="/edit-user/:id" component={CreateUserPage}/>
+      <Route exact path="/create-inventory" component={CreateInventoryPage}/>
+      <Route exact path="/edit-inventory/:id" component={CreateInventoryPage}/>
       <Route exact path="/" component={Home}/>
       <Route component={NotFound}/>
     </Switch>

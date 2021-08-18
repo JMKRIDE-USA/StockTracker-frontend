@@ -86,12 +86,8 @@ export function onQuerySuccess(query, thenFn, {name = "Resource", pageCard = fal
       </OptionalCard>
     )
   }
-  if(
-    query.status !== 'success' || 
-    !Object.hasOwnProperty.call(query.data, 'result')
-  ) {
-    console.log(query);
-    console.log("[QueryLoader][Loading: " + name + "]",
+  if(query.status !== 'success') {
+    console.log("[QueryLoader][Error Loading: " + name + "]",
       {
         status: query.status, error: JSON.stringify(query.error),
         data: query.data,
@@ -108,6 +104,14 @@ export function onQuerySuccess(query, thenFn, {name = "Resource", pageCard = fal
             : query.data,
         }}/>
       </OptionalCard>
+    )
+  }
+  if (!Object.hasOwnProperty.call(query.data, 'result')) {
+    console.log("[QueryLoader][No Data][Loading " + name + "]",
+      {
+        status: query.status, error: JSON.stringify(query.error),
+        data: query.data,
+      },
     )
   }
   return thenFn(query.data);

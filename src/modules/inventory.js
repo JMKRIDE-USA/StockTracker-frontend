@@ -146,9 +146,6 @@ export function useGetCategory(categoryId) {
 export const useGetCategorySetById = (categorySetId) =>
   useGetInventoryStructureQuery("categorySet/id/" + categorySetId);
 
-export const useGetAllInventories = () =>
-  useGetInventoryStructureQuery("inventories/all");
-
 export const useGetAllCategorySets = () =>
   useGetInventoryStructureQuery("categorySets/all");
 
@@ -189,14 +186,16 @@ export const useSetCategorySet = () => {
   return createMutationCall(mutationFn, "setting user Category Set")
 }
 
-export const useSetInventory = () => {
+export const useSetInventory = (options = {}) => {
   const header = useSelector(selectAuthHeader);
   const mutationFn = useMutation(
     ({to_submit}) => fetch(
       config.backend_url + "users/defaults/inventory/id/" + to_submit.id,
       {method: "POST", headers: header}
     ),
-    {onSuccess: async () => queryClient.invalidateQueries('quantity-inventory')}
+    mergeQueryOptions(options, {
+      onSuccess: async () => queryClient.invalidateQueries('quantity-inventory')
+    }),
   );
   return createMutationCall(mutationFn, "setting user inventory")
 }
@@ -597,4 +596,74 @@ export const useSetUserSetting = (key, options = {}) => {
     options,
   );
   return createMutationCall(mutationFn, "setting user setting '" + key + "'");
+}
+
+export const useGetAllInventories = () =>
+  useGetInventoryStructureQuery("inventories/all");
+
+export const useGetInventory = (inventoryId) =>
+  useGetInventoryStructureQuery(
+    "inventory/id/" + inventoryId,
+    {enabled: !!inventoryId},
+  );
+
+export const useCreateInventory = (options = {}) => {
+  const header = useSelector(selectAuthHeader);
+  const mutationFn = useMutation(
+    ({to_submit}) => fetch(
+      config.backend_url + "inventory/create",
+      {
+        method: "POST",
+        headers: {...header, 'Content-Type': 'application/json'},
+        body: JSON.stringify(to_submit),
+      },
+    ),
+    mergeQueryOptions(options, {
+      onSuccess: async () => {
+        queryClient.invalidateQueries('structure-inventory');
+      },
+    }),
+  );
+  return createMutationCall(mutationFn, "creating inventory");
+}
+
+export const usePatchInventory = (inventoryId, options = {}) => {
+  const header = useSelector(selectAuthHeader);
+  const mutationFn = useMutation(
+    ({to_submit}) => fetch(
+      config.backend_url + "inventory/id/" + inventoryId,
+      {
+        method: "PATCH",
+        headers: {...header, 'Content-Type': 'application/json'},
+        body: JSON.stringify(to_submit),
+      },
+    ),
+    mergeQueryOptions(options, {
+      onSuccess: async () => {
+        queryClient.invalidateQueries('structure-inventory');
+        queryClient.invalidateQueries('quantity-inventory');
+      },
+    }),
+  );
+  return createMutationCall(mutationFn, "patching inventory");
+}
+
+export const useDeleteInventory = (inventoryId, options = {}) => {
+  const header = useSelector(selectAuthHeader);
+  const dispatch = useDispatch();
+  const mutationFn = useMutation(
+    ({to_submit}) => fetch(
+      config.backend_url + "inventory/id/" + inventoryId,
+      {method: "DELETE", headers: header},
+    ),
+    mergeQueryOptions(options, {
+      onSuccess: async () => {
+        dispatch(wipeDefaults());
+        dispatch(fetchAuthRequest());
+        queryClient.invalidateQueries('structure-inventory');
+        queryClient.invalidateQueries('quantity-inventory');
+      },
+    }),
+  );
+  return createMutationCall(mutationFn, "deleting inventory");
 }

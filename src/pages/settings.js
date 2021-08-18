@@ -1,21 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
 import styled from 'styled-components';
-import { MdAdd } from 'react-icons/md';
 import { TiDeleteOutline } from 'react-icons/ti';
-import { BsExclamationTriangleFill } from 'react-icons/bs';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import { TitleCard, PageCard, DisableCover } from '../components/common.js';
 import { fetchAuthRequest } from '../redux/authSlice.js';
 import {
   InventorySelector, SingleCategorySelector, SinglePartSelector,
 } from '../components/selectors.js';
-import { selectAuxiliaryParts, selectPartTypeCategories } from '../redux/inventorySlice.js';
+import {
+  selectInventoryId,
+  selectAuxiliaryParts,
+  selectPartTypeCategories,
+} from '../redux/inventorySlice.js';
 import {
   useGetAllParts,
   useSetUserSetting,
-  useGetAllCategories
+  useGetAllCategories,
+  useGetInventory,
 } from '../modules/inventory.js';
 import { QueryLoader } from '../modules/data.js';
 import { CreateButton, EditButton } from '../components/buttons.js';
@@ -24,50 +28,55 @@ import { SelectorLoader } from '../redux/loader.js';
 import { LoadingIcon } from '../components/loading.js';
 import { ResultIndicator } from '../components/result.js';
 import { DebugCheckbox, WithdrawAuxiliaryPartsCheckbox } from '../components/forms/checkboxes.js';
+import { InfoListFromObject } from '../components/lists.js';
+import { ISOToReadableString } from '../modules/date.js';
 
 const InventorySelectorStyle = styled.div`
   flex-direction: column;
   display: flex;
   align-items: center;
   justify-content: center;
-  & > * {
+  & > div:nth-child(2) {
     flex-direction: row;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 `
-const DisableCoverStyle = styled.div`
-  color: #fff;
-  font-weight: bold;
-  font-size: x-large;
-`
 
-function InventorySettings() {
+function InventorySettings({inventory}) {
+  const selectedInventory = useSelector(selectInventoryId);
+  const inventoryQuery = useGetInventory(selectedInventory);
+  const history = useHistory();
+  const createInventory = useCallback(
+    () => history.push('/create-inventory'),
+    [history],
+  )
+  const editInventory = useCallback(
+    () => history.push('/edit-inventory/' + selectedInventory),
+    [history, selectedInventory],
+  )
+  const InventoryInfo = ({inventory}) => (
+    <InfoListFromObject data={{
+      "Description": inventory.description,
+      "Created At": ISOToReadableString(inventory.createdAt),
+      "Created By": inventory.creator?.fullName,
+    }}/>
+  )
   return (
     <PageCard style={{position: "relative"}}>
       <InventorySelectorStyle>
         <h3>Inventory Settings:</h3>
         <div>
-          Inventory:
+          <div style={{fontWeight: "bold"}}>Inventory:</div>
           <InventorySelector/>
-          <CreateButton/>
-          <EditButton style={{marginLeft: 5}}/>
+          <CreateButton onClick={createInventory}/>
+          <EditButton style={{marginLeft: 5}} onClick={editInventory}/>
         </div>
-        <div>
-          Create Inventory:
-          <button className="btn btn-primary" style={{marginLeft: 10}}>
-            <MdAdd size={30} color="white"/>
-          </button>
-        </div>
+        <QueryLoader query={inventoryQuery} propName="inventory">
+          <InventoryInfo/>
+        </QueryLoader>
       </InventorySelectorStyle>
-      <DisableCover>
-        <DisableCoverStyle>
-          <BsExclamationTriangleFill size={40}/>
-          Under Construction
-          <BsExclamationTriangleFill size={40}/>
-        </DisableCoverStyle>
-      </DisableCover>
     </PageCard>
   )
 }
@@ -120,7 +129,7 @@ function PartTypeSettings() {
   const allCategories = useGetAllCategories();
   return (
     <SelectorLoader selectorFn={selectPartTypeCategories} propName="partTypeCategories" pageCard>
-      <QueryLoader query={allCategories} propName="categories">
+      <QueryLoader query={allCategories} propName="categories" pageCard>
         <PartTypeCategorySelectorForm/>
       </QueryLoader>
     </SelectorLoader>
@@ -279,7 +288,7 @@ function AuxiliaryPartSettings() {
   const allParts = useGetAllParts();
   return (
     <SelectorLoader selectorFn={selectAuxiliaryParts} propName="auxiliaryParts" pageCard>
-      <QueryLoader query={allParts} propName="parts">
+      <QueryLoader query={allParts} propName="parts" pageCard>
         <LoadedAuxiliaryPartSettings/>
       </QueryLoader>
     </SelectorLoader>

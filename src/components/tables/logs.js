@@ -68,7 +68,6 @@ export function LogTable({logs, subjectName = "Subject"}) {
       <div>No Logs Found.</div>
     );
   }
-  console.log(logs);
   const formatted_data = logs.map(log => ({
     name: log.actor?.fullName,
     time: new Date(log.createdAt),

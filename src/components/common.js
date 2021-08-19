@@ -1,6 +1,7 @@
 import React from 'react';
 
 import styled from 'styled-components';
+import { Helmet } from 'react-helmet';
 
 import StocktrackerLogo from '../assets/Stocktracker2.0Logo.svg';
 
@@ -47,6 +48,7 @@ export const DisableCover = styled.div`
 export function TitleCard({title, data = {}, children}) {
   return (
     <PageCard>
+      {title && <Helmet><title>{title}</title></Helmet>}
       <img
         src={StocktrackerLogo}
         alt={"JMKRIDE Stocktracker v2.0 logo"}

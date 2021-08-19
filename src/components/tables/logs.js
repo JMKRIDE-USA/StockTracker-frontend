@@ -68,6 +68,7 @@ export function LogTable({logs, subjectName = "Subject"}) {
       <div>No Logs Found.</div>
     );
   }
+  console.log(logs);
   const formatted_data = logs.map(log => ({
     name: log.actor?.fullName,
     time: new Date(log.createdAt),
@@ -78,6 +79,7 @@ export function LogTable({logs, subjectName = "Subject"}) {
     subjectType: log.subjectType,
     action: log.action,
     quantity: log.quantity,
+    inventory: log.inventory?.name,
     payload: log.payload,
   }));
   const columns = [
@@ -92,7 +94,8 @@ export function LogTable({logs, subjectName = "Subject"}) {
     { Header: 'Quantity', accessor: 'quantity', sortType: 'basic'},
     { Header: 'Payload', accessor: 'payload',
       disableSortBy: true, Cell: ExpandableInfoObjectCell,
-    }
+    },
+    { Header: 'Inventory', accessor: 'inventory'},
   ];
   return (
     <Table columns={columns} data={formatted_data}/>

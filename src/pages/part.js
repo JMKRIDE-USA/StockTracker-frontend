@@ -44,17 +44,14 @@ function PartInfoCard({part}) {
     [history, part._id],
   )
   return (
-    <PageCard>
-      <div className="flex-row">
-        <h3>Part: {part.name}</h3>
-        <button style={{marginLeft: 20}} className="btn btn-secondary" onClick={editPart}>Edit</button>
-      </div>
+    <TitleCard title={"Part: " + part.name}>
       <InfoListFromObject data={{
         "Created At": ISOToReadableString(part.createdAt),
         "Created By": part.creator.firstName + " " + part.creator.lastName,
         "Last Update": ISOToReadableString(part.updatedAt),
       }}/>
-    </PageCard>
+      <button style={{marginLeft: 20}} className="btn btn-secondary" onClick={editPart}>Edit Part</button>
+    </TitleCard>
   );
 }
 

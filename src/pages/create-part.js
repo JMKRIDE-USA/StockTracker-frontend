@@ -52,7 +52,7 @@ function PartCreationForm(){
       component: (props) => (
         <input className="form-control" type="number" name="quantity" {...props}/>
       ),
-      formatFn: _=>_,
+      formatFn: _=>_, optional: true,
     }
   );
   return (

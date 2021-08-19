@@ -37,7 +37,7 @@ function CompleteSetEditForm({completeSet}) {
     () => history.push('/completeset'),
     [history],
   )
-  const useMakeDeleteFn = useDeleteCS(completeSet._id);
+  const useMakeDeleteFn = (options) => useDeleteCS(completeSet._id, options);
   const allPartsQuery = useGetAllParts();
   const FormChild = ({formState}) => (
     <>

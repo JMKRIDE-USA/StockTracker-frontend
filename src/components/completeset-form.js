@@ -79,5 +79,5 @@ export function FakeCompleteSetIcon({formState, parts}) {
       fakeCS[key] = {color: getPartColor(value?.value)}
     }
   })
-  return <CompleteSetIcon completeSet={fakeCS} position="top"/>
+  return <CompleteSetIcon completeSet={fakeCS} position="top" absolute/>
 }

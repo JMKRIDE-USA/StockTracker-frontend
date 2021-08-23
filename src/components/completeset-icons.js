@@ -71,7 +71,6 @@ const CSIconParent = styled.div`
   display: flex;
   max-width: 220px;
   min-width: 220px;
-  position: absolute;
 `
 
 const HoverBox = styled.div`
@@ -80,10 +79,10 @@ const HoverBox = styled.div`
   position: absolute;
 `
 
-export function CompleteSetIcon({completeSet, position = "left"}) {
+export function CompleteSetIcon({completeSet, absolute = false, position = "left"}) {
   const [isHovering, setIsHovering] = useState(false);
   return (
-    <CSIconParent style={{[position]: 0}}>
+    <CSIconParent style={{[position]: 0, position: absolute ? "absolute" : "relative"}}>
       { isHovering 
         ? <Angle2 completeSet={completeSet}/> 
         : <Angle1 completeSet={completeSet}/>

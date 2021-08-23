@@ -11,7 +11,9 @@ import { selectCSSetId } from '../redux/inventorySlice.js';
 import { useGetAllCS, useGetCSById } from '../modules/inventory.js';
 import { CSSetSelector } from '../components/selectors.js';
 import { PageCard, TitleCard } from '../components/common.js';
-import { ReorderButton, EditButton, CreateButton } from '../components/buttons.js';
+import { 
+  ReorderButton, EditButton, CreateButton, BackButton 
+} from '../components/buttons.js';
 import { PartsDisplay } from '../components/inventory-display.js';
 import { CompleteSetIcon } from '../components/completeset-icons.js';
 import {
@@ -39,6 +41,9 @@ const TitleRow = styled.div`
   width: 100%;
   height: 100px;
   position: relative;
+  & > * {
+    margin-left: 20px;
+  }
 `
 const FormRow = styled.div`
   display: flex;
@@ -51,34 +56,52 @@ const FormRow = styled.div`
   }
 `
 
-function CompleteSetInfo({completeSet, index=0}) {
+function CompleteSetInfo({completeSet, index=0, fullpage=false}) {
   const history = useHistory()
   const editCompleteSet = useCallback(
     () => history.push('/edit-completeset/' + completeSet._id),
     [history, completeSet._id],
   )
+  const viewCompleteSet = useCallback(
+    () => history.push('/completeset/' + completeSet._id),
+    [history, completeSet._id],
+  )
+  const backToCompleteSets = useCallback(
+    () => history.push('/completeset'),
+    [history],
+  )
   return (
-    <PageCard key={index} style={{maxWidth: "95vw"}}>
+    <PageCard key={index} style={{position: "relative", maxWidth: "95vw"}}>
       <TitleRow>
         <CompleteSetIcon completeSet={completeSet}/>
         <h3>Complete Set: "{completeSet.name}" </h3>
-        <EditButton
-          onClick={editCompleteSet}
-          style={{position: "absolute", right: 0, marginRight: 50}}
-        />
+        {fullpage
+          ?  <EditButton
+            onClick={editCompleteSet}
+            style={{position: "absolute", right: 0, marginRight: 50}}
+          /> : <button
+            onClick={viewCompleteSet}
+            className="btn btn-secondary"
+          >View</button>
+        }
       </TitleRow>
       { getDescription(completeSet) }
       <FormRow>
         <CompleteSetWithdrawalForm completeSet={completeSet}/>
-        <CompleteSetDepositForm completeSet={completeSet}/>
+        { fullpage && <CompleteSetDepositForm completeSet={completeSet}/> }
       </FormRow>
-      <PartsDisplay
-        parts={completeSet.allParts}
-        name={completeSet.name}
-        height={50}
-        partOccurance={completeSet.idOccurances}
-        title={false}
-      />
+      {fullpage &&
+        <>
+          <PartsDisplay
+            parts={completeSet.allParts}
+            name={completeSet.name}
+            height={50}
+            partOccurance={completeSet.idOccurances}
+            title={false}
+          />
+          <BackButton onClick={backToCompleteSets}/>
+        </>
+      }
     </PageCard>
   );
 }
@@ -126,7 +149,7 @@ export default function CompleteSetPage() {
     <div className="page">
     { id 
       ? <QueryLoader query={idCSQuery} propName="completeSet" pageCard>
-          <CompleteSetInfo/> 
+          <CompleteSetInfo fullpage/> 
         </QueryLoader>
       : <>
         <TitleCard title={"Complete Sets"}>

@@ -216,6 +216,7 @@ const PartWithdrawalForm = ({part}) => (
 const PartInfoRow = styled.div`
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   margin: 10px;
@@ -234,7 +235,7 @@ const PartInfoRow = styled.div`
 `
 
 function LoadedPartInfoAndControls(
-  {part, onClose, partViewButton = true, withdrawEnabled = true, depositEnabled = true}
+  {part, onClose, partViewButton = true, withdrawEnabled = true, depositEnabled = false}
 ) {
   const history = useHistory();
   const viewPart = useCallback(
@@ -254,8 +255,10 @@ function LoadedPartInfoAndControls(
         </div>
         {part.quantity}
       </div>
-      { withdrawEnabled ? <PartWithdrawalForm part={part}/> : ''}
-      { depositEnabled ? <PartDepositForm part={part}/> : ''}
+      <div className="flex-row">
+        { withdrawEnabled ? <PartWithdrawalForm part={part}/> : ''}
+        { depositEnabled ? <PartDepositForm part={part}/> : ''}
+      </div>
       <div className="part-info">
         { partViewButton
           ? <button onClick={viewPart} className="btn btn-secondary">

@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 import { Provider, useSelector, useDispatch } from 'react-redux';
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Switch, Route, useLocation } from "react-router-dom";
 import { QueryClientProvider } from 'react-query';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -83,6 +83,12 @@ function PageSwitch() {
   );
 }
 
+const ScrollToTopHOC = ({children}) => {
+  const location = useLocation();
+  useEffect(() => window.scrollTo(0, 0), [location]);
+  return <>{children}</>
+}
+
 function AppContent() {
   const dispatch = useDispatch();
   useEffect(
@@ -106,8 +112,10 @@ function AppContent() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Header/>
-        <ContentComponent/>
+        <ScrollToTopHOC>
+          <Header/>
+          <ContentComponent/>
+        </ScrollToTopHOC>
       </BrowserRouter>
     </div>
   );

@@ -23,7 +23,10 @@ function Angle1({completeSet}) {
   let style = genStyle(completeSet, true);
   const makeId = (id) => id + "-" + completeSet._id + "-1";
   return (
-    <svg id={makeId("angle1")} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 708.99 328.84">
+    <svg
+      id={makeId("angle1")} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 708.99 328.84" 
+      height="102px" width="220px"
+    >
       <defs>
         <style> {style} </style>
       </defs>
@@ -47,7 +50,9 @@ function Angle2({completeSet}) {
   let style = genStyle(completeSet, false);
   const makeId = (id) => id + "-" + completeSet._id + "-2";
   return (
-    <svg id={makeId("angle2")} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720.94 332.82">
+    <svg id={makeId("angle2")} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720.94 332.82"
+      height="102px" width="220px"
+    >
       <defs>
         <style> {style} </style>
       </defs>

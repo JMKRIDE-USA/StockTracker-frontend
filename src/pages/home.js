@@ -16,13 +16,11 @@ import { ReorderButton, EditButton, CreateButton } from '../components/buttons.j
 function AllCategories({categories}) {
   if(categories.length) {
     return categories.map((category, index) => (
-      <div className="bar-chart-supercard" key={index}>
-        <CategoryDisplayCard
-          categoryId={category._id}
-          categoryName={category.name}
-          length={category.length}
-        />
-      </div>
+      <CategoryDisplayCard
+        categoryId={category._id}
+        categoryName={category.name}
+        length={category.length}
+      />
     ));
   }
   return (

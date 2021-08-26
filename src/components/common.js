@@ -20,7 +20,6 @@ export const PageCard = styled.div`
   border-style: solid;
   border-width: 1px;
   border-color: black;
-  padding: 10px;
   box-shadow: 0 12px 25px 0 rgba(0, 0, 0, 0.5), 0 18px 35px 0 rgba(0, 0, 0, 0.29);
   & > * {
     padding: 10px;

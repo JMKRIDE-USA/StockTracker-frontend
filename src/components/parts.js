@@ -235,7 +235,7 @@ const PartInfoRow = styled.div`
 `
 
 function LoadedPartInfoAndControls(
-  {part, onClose, partViewButton = true, withdrawEnabled = true, depositEnabled = false}
+  {part, onClose, partViewButton = true, withdrawEnabled = true, depositEnabled = true}
 ) {
   const history = useHistory();
   const viewPart = useCallback(

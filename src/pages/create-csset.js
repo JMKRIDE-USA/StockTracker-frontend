@@ -32,6 +32,7 @@ const getStateList = ({CSSet, completeSets} = {}) => ([
       : []
     ),
     component: MultiCSSelector, formatFn: CSs => CSs.map(c => c.value),
+    optional: true,
   },
 ])
 

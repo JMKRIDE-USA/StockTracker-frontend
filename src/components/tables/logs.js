@@ -35,7 +35,7 @@ const HeaderRowStyle = styled.div`
   }
 `
 
-export function PageableLogTable({endpoint, pageCard = true, ...props}) {
+export function PageableLogTable({endpoint, pageCard = true, title, ...props}) {
   const [page, setPage] = useState(0);
   const [perPage, setPerPage] = useState(50);
 
@@ -45,7 +45,7 @@ export function PageableLogTable({endpoint, pageCard = true, ...props}) {
 
   const query = useGetLogsEndpoint(
     endpoint + "/inventory/id/" + inventoryId + "?page=" + page + "&perPage=" + perPage,
-    {enabled: !!inventoryId},
+    {enabled: !!inventoryId, version: "v2"},
   )
   return (
     <OptionalCard pageCard={pageCard}>
@@ -59,6 +59,7 @@ export function PageableLogTable({endpoint, pageCard = true, ...props}) {
             <HiChevronRight size={15} color="white"/>
           </button>
         </div>
+        <h3>{title}</h3>
         <div>
           Per Page:
           <input type="Number" value={perPage} onChange={e => setPerPage(e.target.value)}/>
@@ -106,9 +107,15 @@ const CollapseButton = () => (
   </span>
 )
 
-export function LogTable({logs, subjectName = "Subject"}) {
-  console.log(logs);
-  const formatted_data = logs.map(formatDisplayLog);
+/* 
+ * LogTable
+ *
+ * logs - loaded log data
+ * raw - true if logs are raw logs, rather than displayLogs
+ * subjectName - header name for the subject
+ */
+function LogTable({logs, raw = false, subjectName = "Subject"}) {
+  const formatted_data = logs.map(raw ? genRowData({depth: 0}) : formatDisplayLog);
   const columns = useMemo(() => [
     { id: 'expander', 
       Cell: ({row}) =>
@@ -131,7 +138,7 @@ export function LogTable({logs, subjectName = "Subject"}) {
       disableSortBy: true, Cell: ExpandableInfoObjectCell,
     },
     { Header: 'Inventory', accessor: 'inventory'},
-  ], []);
+  ], [subjectName]);
   if(! logs.length) {
     return (
       <div>No Logs Found.</div>

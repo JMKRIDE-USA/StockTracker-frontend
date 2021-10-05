@@ -11,12 +11,11 @@ import { InfoListFromObject } from '../components/lists.js';
 import { PartTable } from '../components/tables/parts.js';
 import { QueryLoader } from '../modules/data.js';
 import { PartsDisplay } from '../components/inventory-display.js';
-import { LogTable } from '../components/tables/logs.js';
+import { PageableLogTable } from '../components/tables/logs.js';
 import {
   useGetPart,
   useGetAllParts,
   useSearchAllParts,
-  useGetLogsByPart,
 } from '../modules/inventory.js';
 
 
@@ -57,19 +56,16 @@ function PartInfoCard({part}) {
 
 function SinglePartPage({ id }){
   const partQuery = useGetPart(id);
-  const logQuery = useGetLogsByPart({partId: id});
   return (
     <>
       <QueryLoader query={partQuery} propName={"part"} pageCard>
         <PartInfoCard/>
         <PartChartCard/>
       </QueryLoader>
-      <PageCard>
-        <h3>Update History:</h3>
-        <QueryLoader query={logQuery} propName={"logs"}>
-          <LogTable subjectName="Part"/>
-        </QueryLoader>
-      </PageCard>
+      <PageableLogTable
+        endpoint={"logs/part/id/" + id} title={"Update History:"}
+        subjectName="Part" raw
+      />
     </>
   );
 }

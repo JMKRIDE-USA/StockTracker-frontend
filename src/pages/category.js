@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useParams } from 'react-router-dom';
 
-import { PageCard, TitleCard } from '../components/common.js';
+import { TitleCard } from '../components/common.js';
 import { InfoListFromObject } from '../components/lists.js';
 import { useGetCategory } from '../modules/inventory.js';
 import { CategoryDisplayCard } from '../components/inventory-display.js';
@@ -30,14 +30,11 @@ function SingleCategoryPage({category}) {
         }}/>
       </TitleCard>
       <CategoryChart category={category}/>
-      <PageCard>
-        <h3>Update History:</h3>
-        <PageableLogTable
-          endpoint={"logs/category/id/" + category._id}
-          subjectName="Part"
-          pageCard={false}
-        />
-      </PageCard>
+      <PageableLogTable
+        endpoint={"logs/category/id/" + category._id}
+        title={"Update History:"}
+        subjectName="Part"
+      />
     </>
   );
 }

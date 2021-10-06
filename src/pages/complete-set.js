@@ -19,6 +19,7 @@ import { CompleteSetIcon } from '../components/completeset-icons.js';
 import {
   CompleteSetWithdrawalForm, CompleteSetDepositForm,
 } from '../components/parts.js';
+import { PageableLogTable } from '../components/tables/logs.js';
 
 
 const getDescription = (completeSet) => {
@@ -71,38 +72,46 @@ function CompleteSetInfo({completeSet, index=0, fullpage=false}) {
     [history],
   )
   return (
-    <PageCard key={index} style={{position: "relative", maxWidth: "95vw"}}>
-      <TitleRow>
-        <CompleteSetIcon completeSet={completeSet}/>
-        <h3>Complete Set: "{completeSet.name}" </h3>
-        {fullpage
-          ?  <EditButton
-            onClick={editCompleteSet}
-            style={{position: "absolute", right: 0, marginRight: 50}}
-          /> : <button
-            onClick={viewCompleteSet}
-            className="btn btn-secondary"
-          >View</button>
+    <>
+      <PageCard key={index} style={{position: "relative", maxWidth: "95vw"}}>
+        <TitleRow>
+          <CompleteSetIcon completeSet={completeSet}/>
+          <h3>Complete Set: "{completeSet.name}" </h3>
+          {fullpage
+            ?  <EditButton
+              onClick={editCompleteSet}
+              style={{position: "absolute", right: 0, marginRight: 50}}
+            /> : <button
+              onClick={viewCompleteSet}
+              className="btn btn-secondary"
+            >View</button>
+          }
+        </TitleRow>
+        { getDescription(completeSet) }
+        <FormRow>
+          <CompleteSetWithdrawalForm completeSet={completeSet}/>
+          { fullpage && <CompleteSetDepositForm completeSet={completeSet}/> }
+        </FormRow>
+        {fullpage &&
+          <>
+            <PartsDisplay
+              parts={completeSet.allParts}
+              name={completeSet.name}
+              height={50}
+              partOccurance={completeSet.idOccurances}
+              title={false}
+            />
+            <BackButton onClick={backToCompleteSets}/>
+          </>
         }
-      </TitleRow>
-      { getDescription(completeSet) }
-      <FormRow>
-        <CompleteSetWithdrawalForm completeSet={completeSet}/>
-        { fullpage && <CompleteSetDepositForm completeSet={completeSet}/> }
-      </FormRow>
+      </PageCard>
       {fullpage &&
-        <>
-          <PartsDisplay
-            parts={completeSet.allParts}
-            name={completeSet.name}
-            height={50}
-            partOccurance={completeSet.idOccurances}
-            title={false}
-          />
-          <BackButton onClick={backToCompleteSets}/>
-        </>
+        <PageableLogTable
+          title={"Update History"}
+          endpoint={"logs/completeset/id/" + completeSet._id}
+        />
       }
-    </PageCard>
+    </>
   );
 }
 

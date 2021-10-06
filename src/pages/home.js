@@ -20,6 +20,7 @@ function AllCategories({categories}) {
         categoryId={category._id}
         categoryName={category.name}
         length={category.length}
+        key={index}
       />
     ));
   }

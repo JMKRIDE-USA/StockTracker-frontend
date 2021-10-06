@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import styled from 'styled-components';
-import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
+import { useSelector } from 'react-redux';
+import {
+  HiChevronUp,
+  HiChevronDown,
+  HiChevronLeft,
+  HiChevronRight,
+} from 'react-icons/hi';
 
 import { Table, ExpandableInfoObjectCell, ClickableTextCell } from './table.js';
 import { ISOToReadableString } from '../../modules/date.js';
 import { QueryLoader } from '../../modules/data.js';
 import { OptionalCard } from '../../components/common.js';
 import { useGetLogsEndpoint } from '../../modules/inventory.js';
+import { selectInventoryId } from '../../redux/inventorySlice.js';
 
 const HeaderRowStyle = styled.div`
   display: flex;
@@ -28,15 +35,17 @@ const HeaderRowStyle = styled.div`
   }
 `
 
-export function PageableLogTable({endpoint, pageCard = true, ...props}) {
+export function PageableLogTable({endpoint, pageCard = true, title, ...props}) {
   const [page, setPage] = useState(0);
   const [perPage, setPerPage] = useState(50);
 
   const decrementPage = () => setPage(page - 1);
   const incrementPage = () => setPage(page + 1);
+  const inventoryId = useSelector(selectInventoryId);
 
   const query = useGetLogsEndpoint(
-    endpoint + "?page=" + page + "&perPage=" + perPage,
+    endpoint + "/inventory/id/" + inventoryId + "?page=" + page + "&perPage=" + perPage,
+    {enabled: !!inventoryId, version: "v2"},
   )
   return (
     <OptionalCard pageCard={pageCard}>
@@ -50,6 +59,7 @@ export function PageableLogTable({endpoint, pageCard = true, ...props}) {
             <HiChevronRight size={15} color="white"/>
           </button>
         </div>
+        <h3>{title}</h3>
         <div>
           Per Page:
           <input type="Number" value={perPage} onChange={e => setPerPage(e.target.value)}/>
@@ -62,26 +72,59 @@ export function PageableLogTable({endpoint, pageCard = true, ...props}) {
   )
 }
 
-export function LogTable({logs, subjectName = "Subject"}) {
-  if(! logs.length) {
-    return (
-      <div>No Logs Found.</div>
-    );
+const genRowData = ({depth}) => data => ({
+  name: data.actor?.fullName,
+  time: new Date(data.createdAt),
+  subject: {
+    text: data.subject?.name,
+    link: "/" + data.subjectType + "/" + data.subject?._id
+  },
+  subjectType: data.subjectType,
+  action: data.action,
+  quantity: data.quantity,
+  inventory: data.inventory?.name,
+  payload: data.payload,
+})
+
+const formatDisplayLog = log => {
+  if(log?.raw) {
+    return genRowData({depth: 0})(log.logs[0])
   }
-  const formatted_data = logs.map(log => ({
-    name: log.actor?.fullName,
-    time: new Date(log.createdAt),
-    subject: {
-      text: log.subject?.name,
-      link: "/" + log.subjectType + "/" + log.subject?._id
+  return {
+    ...genRowData({depth: 0})(log),
+    subRows: log.logs.map(genRowData({depth: 1})),
+  }
+}
+
+const ExpandButton = () => (
+  <span style={{Width: "10px", Height: "10px"}}>
+    <HiChevronUp size={15} color={"black"}/>
+  </span>
+)
+const CollapseButton = () => (
+  <span style={{Width: "10px", Height: "10px"}}>
+    <HiChevronDown size={15} color={"black"}/>
+  </span>
+)
+
+/* 
+ * LogTable
+ *
+ * logs - loaded log data
+ * raw - true if logs are raw logs, rather than displayLogs
+ * subjectName - header name for the subject
+ */
+function LogTable({logs, raw = false, subjectName = "Subject"}) {
+  const formatted_data = logs.map(raw ? genRowData({depth: 0}) : formatDisplayLog);
+  const columns = useMemo(() => [
+    { id: 'expander', 
+      Cell: ({row}) =>
+        row.canExpand ? (
+          <span {...row.getToggleRowExpandedProps()}>
+            {row.isExpanded ? <CollapseButton/> : <ExpandButton/>}
+          </span>
+        ) : null,
     },
-    subjectType: log.subjectType,
-    action: log.action,
-    quantity: log.quantity,
-    inventory: log.inventory?.name,
-    payload: log.payload,
-  }));
-  const columns = [
     { Header: 'Time', accessor: 'time',
       sortInverted: true, sortType: 'datetime',
       Cell: ({value}) => ISOToReadableString(value)
@@ -95,7 +138,12 @@ export function LogTable({logs, subjectName = "Subject"}) {
       disableSortBy: true, Cell: ExpandableInfoObjectCell,
     },
     { Header: 'Inventory', accessor: 'inventory'},
-  ];
+  ], [subjectName]);
+  if(! logs.length) {
+    return (
+      <div>No Logs Found.</div>
+    );
+  }
   return (
     <Table columns={columns} data={formatted_data}/>
   )

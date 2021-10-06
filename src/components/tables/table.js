@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import styled from 'styled-components';
-import { useTable, useSortBy } from 'react-table';
+import { useTable, useSortBy, useExpanded } from 'react-table';
 import {
   HiSortAscending,
   HiSortDescending,
@@ -95,7 +95,7 @@ export function Table({ columns, data }) {
     allColumns,
     rows,
     prepareRow,
-  } = useTable({ columns, data }, useSortBy);
+  } = useTable({ columns, data }, useSortBy, useExpanded);
   return (
     <Styles>
       <table
@@ -122,7 +122,13 @@ export function Table({ columns, data }) {
             return (
               <tr
                 {...row.getRowProps()}
-                style={{backgroundColor: i%2 ? "#eeeeee" : "white"}}
+                style={{ backgroundColor: 
+                  row.depth > 0
+                  ? "#bababa"
+                  : i%2 
+                  ? "#eeeeee" 
+                  : "white"
+                }}
               >
                 {row.cells.map(cell => (
                   <td {...cell.getCellProps()}>{cell.render('Cell')}</td>

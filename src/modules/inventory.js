@@ -224,12 +224,6 @@ export const useAdjustPartQuantity = ({partId}, options = {}) => {
   return createMutationCall(mutationFn, "adjusting part quantity");
 }
 
-export const useGetLogsByCategory = ({categoryId}) =>
-  useGetInventoryQuantityQuery("logs/category/id/" + categoryId);
-
-export const useGetLogsByPart = ({partId}) =>
-  useGetInventoryQuantityQuery("logs/part/id/" + partId);
-
 export const useGetLogsEndpoint = (endpoint, options) =>
   useGetInventoryLogQuery(endpoint, options)
 

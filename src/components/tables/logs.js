@@ -76,7 +76,7 @@ const genRowData = ({depth}) => data => ({
   name: data.actor?.fullName,
   time: new Date(data.createdAt),
   subject: {
-    text: data.subject?.name,
+    text: data.subject?.name ? data.subject.name : data.subjectType === 'completeset' ? 'Custom Set' : data.subject?._id,
     link: "/" + data.subjectType + "/" + data.subject?._id
   },
   subjectType: data.subjectType,

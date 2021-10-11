@@ -37,7 +37,7 @@ const HeaderRowStyle = styled.div`
 
 export function PageableLogTable({endpoint, pageCard = true, title, ...props}) {
   const [page, setPage] = useState(0);
-  const [perPage, setPerPage] = useState(150);
+  const [perPage, setPerPage] = useState(50);
 
   const decrementPage = () => setPage(page - 1);
   const incrementPage = () => setPage(page + 1);

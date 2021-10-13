@@ -11,6 +11,7 @@ import { InfoListFromObject } from '../components/lists.js';
 import { PartTable } from '../components/tables/parts.js';
 import { QueryLoader } from '../modules/data.js';
 import { PartsDisplay } from '../components/inventory-display.js';
+import { PartHistoryDisplayChart } from '../components/quantity-history-display.js';
 import { PageableLogTable } from '../components/tables/logs.js';
 import {
   useGetPart,
@@ -66,6 +67,7 @@ function SinglePartPage({ id }){
         endpoint={"logs/part/id/" + id} title={"Update History:"}
         subjectName="Part" raw
       />
+      <PartHistoryDisplayChart partId={id}/>
     </>
   );
 }

@@ -158,7 +158,8 @@ export const useGetCSSetById = (CSSetId) =>
 export const useGetPart = (partId, { withQuantity = true } = {}) => {
   const inventoryId = useSelector(selectInventoryId);
   return useGetInventoryQuantityQuery(
-    "part/id/" + partId + (withQuantity ? "/inventory/id/" + inventoryId : "")
+    "part/id/" + partId + (withQuantity ? "/inventory/id/" + inventoryId : ""),
+    { enabled: !!inventoryId }
   );
 }
 
@@ -660,4 +661,25 @@ export const useDeleteInventory = (inventoryId, options = {}) => {
     }),
   );
   return createMutationCall(mutationFn, "deleting inventory");
+}
+
+export const useGetHistory = ({type, id, start, end}, options = {}) => {
+  const inventoryId = useSelector(selectInventoryId);
+  let endpoint = (
+    'history/' + type + '/id/' + id + '/inventory/id/' + inventoryId
+  )
+  let queries = []
+  if(start) queries.push(['start', start]);
+  if(end) queries.push(['end', end]);
+
+  if(queries.length) {
+    queries.map(([key, value], index) => endpoint += (
+      index === 0 
+        ? '?' + key + '=' + value
+        : '&' + key + '=' + value
+    ))
+  }
+  return useGetInventoryLogQuery(
+    endpoint, mergeQueryOptions(options, {enabled: !!inventoryId})
+  )
 }

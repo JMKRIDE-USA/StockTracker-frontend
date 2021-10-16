@@ -63,6 +63,13 @@ export function useGetPartsByCategory(categoryId, { noQuantity = false } = {}) {
     {enabled: !!categoryId && !!inventoryId},
   );
 }
+export function useGetPartsByCompleteSet(completeSetId) {
+  const inventoryId = useSelector(selectInventoryId);
+  return useGetInventoryQuantityQuery(
+    "parts/completeset/id/" + completeSetId + "/inventory/id/" + inventoryId,
+    {enabled: !!completeSetId && !!inventoryId},
+  );
+}
 export function useGetAllParts(){
   const inventoryId = useSelector(selectInventoryId);
   return useGetInventoryQuantityQuery(

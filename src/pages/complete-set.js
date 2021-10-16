@@ -20,6 +20,9 @@ import {
   CompleteSetWithdrawalForm, CompleteSetDepositForm,
 } from '../components/parts.js';
 import { PageableLogTable } from '../components/tables/logs.js';
+import {
+  CompleteSetHistoryDisplayChart
+} from '../components/quantity-history-display.js';
 
 
 const getDescription = (completeSet) => {
@@ -106,10 +109,13 @@ function CompleteSetInfo({completeSet, index=0, fullpage=false}) {
         }
       </PageCard>
       {fullpage &&
-        <PageableLogTable
-          title={"Update History"}
-          endpoint={"logs/completeset/id/" + completeSet._id}
-        />
+        <>
+          <PageableLogTable
+            title={"Update History"}
+            endpoint={"logs/completeset/id/" + completeSet._id}
+          />
+          <CompleteSetHistoryDisplayChart completeSetId={completeSet._id}/>
+        </>
       }
     </>
   );

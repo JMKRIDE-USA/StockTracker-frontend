@@ -8,6 +8,9 @@ import { useGetCategory } from '../modules/inventory.js';
 import { CategoryDisplayCard } from '../components/inventory-display.js';
 import { PageableLogTable } from '../components/tables/logs.js';
 import { QueryLoader } from '../modules/data.js';
+import {
+  CategoryHistoryDisplayChart 
+} from '../components/quantity-history-display.js';
 
 
 const CategoryChart = ( {category} ) => ( 
@@ -35,6 +38,7 @@ function SingleCategoryPage({category}) {
         title={"Update History:"}
         subjectName="Part"
       />
+      <CategoryHistoryDisplayChart categoryId={category._id}/>
     </>
   );
 }

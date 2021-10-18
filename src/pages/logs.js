@@ -7,7 +7,7 @@ export default function AllLogsPage() {
   return (
     <div className="page">
       <TitleCard title="All Activity"/>
-      <PageableLogTable endpoint="logs/all"/>
+      <PageableLogTable endpoint="logs/all" defaultPerPage={50}/>
     </div>
   )
 }

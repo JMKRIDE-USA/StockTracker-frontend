@@ -3,8 +3,10 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import chroma from 'chroma-js';
 import Select from 'react-select';
-import { AUTH_STATE, authStateToString } from '../constants.js';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
+import { AUTH_STATE, authStateToString } from '../constants.js';
 import {
   QueryLoader,
   onQuerySuccess,
@@ -294,4 +296,11 @@ export function SinglePartSelector(props) {
       <ReduxLoadedSinglePartSelector {...props}/>
     </SelectorLoader>
   );
+}
+
+export function DateSelector({state, ...props}){
+  return (
+    <DatePicker selected={state[0]} onChange={date => state[1](date)} {...props}/>
+
+  )
 }

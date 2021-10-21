@@ -75,14 +75,18 @@ export function PartsDisplayChart({parts, setSelectedPart, partOccurance}) {
 }
 
 const ChartButtons = styled.div`
+  flex: 1;
+  flex-direction: row;
   margin-left: 2px;
   & > button {
-    margin-left: 8px;
+    margin-left: 5px;
+    margin-top: 3px;
   }
 `
 const ChartTitleRow = styled.div`
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-between;
 `
 
@@ -101,7 +105,7 @@ export function PartsDisplay({
     <PartsDisplayStyle>
       {title &&
         <ChartTitleRow>
-          <div/>
+          <div style={{flex: 1}}/>
           <h3>{name} Inventory</h3>
           {buttonFn()}
         </ChartTitleRow>
@@ -157,7 +161,7 @@ export function CategoryDisplayCard(
       <QueryLoader query={partsQuery} propName={"parts"}>
         <PartsDisplay name={categoryName} buttonFn={() => (
           <CategoryButtons {...{categoryId, viewButton, editButton}}/>
-        )} style={{minWidth: "1000px"}}/>
+        )}/>
       </QueryLoader>
     </PageCard>
   );

@@ -51,7 +51,7 @@ export function TitleCard({title, data = {}, children}) {
       <img
         src={StocktrackerLogo}
         alt={"JMKRIDE Stocktracker v2.0 logo"}
-        style={{width: "400px"}}
+        style={{maxWidth: "400px", marginLeft: "5px", marginRight: "5px"}}
       />
       <div className="begoodpeople">
         {title ? title : "Be Good People."}

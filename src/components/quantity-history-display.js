@@ -69,6 +69,7 @@ Chart.register(
 
 function LoadedHistoryDisplayChart({parts, partHistories, chartId, fill = true}){
   if(!Array.isArray(parts)) parts = [parts]
+  const minHeight = Math.max(300, Math.min(1000, 40 * parts.length)) // 300 < H < 1000
   const data = {
     datasets: parts.map(part => ({
       label: part.name,
@@ -98,10 +99,12 @@ function LoadedHistoryDisplayChart({parts, partHistories, chartId, fill = true})
           display: true,
           text: 'Quantity',
         },
+        beginAtZero: false,
       }
     },
     responsive: true,
     animation: false,
+    maintainAspectRatio: false,
   }
   const config = {
     type: 'line',
@@ -120,11 +123,11 @@ function LoadedHistoryDisplayChart({parts, partHistories, chartId, fill = true})
   }, [canvasRef.current]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
-  return <canvas ref={canvasRef}/>
+  return <div style={{minHeight}}><canvas ref={canvasRef}/></div>
 }
 
 const HistoryDisplayChartDiv = styled.div`
-  width: 90vw;
+  width: min(90vw, 1300px);
   & > .title-row {
     display: flex;
     flex-direction: row;
@@ -139,6 +142,7 @@ const HistoryDisplayChartDiv = styled.div`
       display: flex;
       flex: 1;
       flex-direction: row;
+      flex-wrap: wrap;
       & > label {
         margin-right: 5px;
       }
@@ -202,7 +206,7 @@ function HistoryDisplayCard({partsQuery, historyQueryParams, title, ...props}){
         </div>
         <QueryLoader query={historyQuery} propName='partHistories'>
           <QueryLoader query={partsQuery} propName='parts'>
-            <LoadedHistoryDisplayChart {...props}/>
+            <LoadedHistoryDisplayChart chartId={title} {...props}/>
           </QueryLoader>
         </QueryLoader>
       </HistoryDisplayChartDiv>

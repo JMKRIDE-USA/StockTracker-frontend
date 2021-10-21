@@ -41,12 +41,14 @@ const TitleRow = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  flex-wrap: wrap;
   justify-content: center;
   width: 100%;
-  height: 100px;
-  position: relative;
+  flex: 1;
   & > * {
-    margin-left: 20px;
+    & > * { margin-left: 20px;}
+    flex-direction: row;
+    display: flex;
   }
 `
 const FormRow = styled.div`
@@ -79,16 +81,18 @@ function CompleteSetInfo({completeSet, index=0, fullpage=false}) {
       <PageCard key={index} style={{position: "relative", maxWidth: "95vw"}}>
         <TitleRow>
           <CompleteSetIcon completeSet={completeSet}/>
-          <h3>Complete Set: "{completeSet.name}" </h3>
-          {fullpage
-            ?  <EditButton
-              onClick={editCompleteSet}
-              style={{position: "absolute", right: 0, marginRight: 50}}
-            /> : <button
-              onClick={viewCompleteSet}
-              className="btn btn-secondary"
-            >View</button>
-          }
+          <div>
+            <h3>Complete Set: "{completeSet.name}" </h3>
+            {fullpage
+              ?  <EditButton
+                onClick={editCompleteSet}
+                style={{position: "absolute", right: 0, marginRight: 50}}
+              /> : <button
+                onClick={viewCompleteSet}
+                className="btn btn-secondary"
+              >View</button>
+            }
+          </div>
         </TitleRow>
         { getDescription(completeSet) }
         <FormRow>
@@ -134,6 +138,19 @@ function CompleteSetList({completeSets}) {
   );
 }
 
+const TitleCardStyle = styled.div`
+  & > * {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  & > *:nth-last-child(-n+3) {
+    margin-top: 6px;
+  }
+`
+
 export default function CompleteSetPage() {
   const { id } = useParams();
   const idCSQuery = useGetCSById(id);
@@ -168,27 +185,28 @@ export default function CompleteSetPage() {
         </QueryLoader>
       : <>
         <TitleCard title={"Complete Sets"}>
-          <div className="flex-row flex-centered">
-            <div className="text-bold"> Current CS Set:</div>
-            <CSSetSelector/>
-            <ReorderButton onClick={reorderCSSet} style={{marginRight: 5}}/>
-            <EditButton onClick={editCSSet} style={{marginRight: 5}}/>
-            <CreateButton onClick={createCSSet}/>
-          </div>
-          <div className="flex-row flex-centered">
-            <div className="text-bold" style={{marginRight: 20}}>
-              Create Complete Set:
+          <TitleCardStyle>
+            <div>
+              <div className="text-bold"> Current CS Set:</div>
+              <CSSetSelector/>
+              <ReorderButton onClick={reorderCSSet} style={{marginRight: 5}}/>
+              <EditButton onClick={editCSSet} style={{marginRight: 5}}/>
+              <CreateButton onClick={createCSSet}/>
             </div>
-            <button className="btn btn-primary" onClick={createCompleteSet}>
-              <MdAdd size={30} color="white"/>
-            </button>
-          </div>
-          <div className="flex-row flex-centered">
-            <button className="btn btn-secondary" onClick={withdrawCustomSet}>
-              Withdraw Custom Set
-            </button>
-          </div>
-          <WithdrawAuxiliaryPartsCheckbox/>
+            <hr/>
+            <div>
+              <div className="text-bold" style={{marginRight: 20}}>
+                Create Complete Set:
+              </div>
+              <CreateButton onClick={createCompleteSet} style={{backgroundColor: "#00a0db"}}/>
+            </div>
+            <div>
+              <button className="btn btn-secondary" onClick={withdrawCustomSet}>
+                Withdraw Custom Set
+              </button>
+            </div>
+            <WithdrawAuxiliaryPartsCheckbox/>
+          </TitleCardStyle>
         </TitleCard>
         <QueryLoader query={allCSQuery} propName="completeSets" pageCard>
           <CompleteSetList/>

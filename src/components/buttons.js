@@ -24,7 +24,6 @@ export const BackButton = (props) => (
 export const ReorderButton = (props) => (
   <button className="btn btn-secondary" {...props}>
     <HiMenuAlt1 size={15}/>
-    <HiMenuAlt3 size={15}/>
   </button>
 )
 
@@ -40,7 +39,7 @@ const CreateButtonStyle = styled.button`
 `
 export const CreateButton = (props) => (
   <CreateButtonStyle className="btn btn-secondary" title="Create New" {...props}>
-    <MdAdd size={19} color="white"/>
+    <MdAdd size={18} color="white"/>
   </CreateButtonStyle>
 );
 

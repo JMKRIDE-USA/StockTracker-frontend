@@ -22,7 +22,7 @@ import {
 
 function PartChartCard({part}) {
   return (
-    <PageCard style={{minWidth: "1000px"}}>
+    <PageCard>
       <PartsDisplay
         parts={[part]}
         name={part.name}

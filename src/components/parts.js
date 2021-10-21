@@ -221,6 +221,13 @@ const PartInfoRow = styled.div`
   align-items: center;
   margin: 10px;
   border: 1px solid black;
+  & > .fields {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    & > * { margin: 2px; }
+  }
   & > * {
     margin: 3px;
   }
@@ -255,7 +262,7 @@ function LoadedPartInfoAndControls(
         </div>
         {part.quantity}
       </div>
-      <div className="flex-row">
+      <div className="fields">
         { withdrawEnabled ? <PartWithdrawalForm part={part}/> : ''}
         { depositEnabled ? <PartDepositForm part={part}/> : ''}
       </div>

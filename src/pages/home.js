@@ -3,6 +3,7 @@ import React, { useCallback } from 'react';
 import { MdAdd } from 'react-icons/md';
 import { useParams, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
 
 import { PageCard, TitleCard  } from '../components/common.js';
 import { setCategorySetId, selectCategorySetId } from '../redux/inventorySlice.js';
@@ -32,6 +33,24 @@ function AllCategories({categories}) {
   );
 }
 
+const TitleStyle = styled.div`
+  display: flex;
+  flex-direction: column;
+  & > * {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    & > * {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+`
+
 function Home() {
   const categoryQuery = useGetAllCategoriesByCategorySet()
   const history = useHistory()
@@ -60,21 +79,28 @@ function Home() {
   return (
     <div className="page">
       <TitleCard title="Categories">
-        <div className="flex-row flex-centered">
-          <div className="text-bold">Current Category Set:</div>
-          <CategorySetSelector/>
-          <ReorderButton style={{marginRight: 5}} onClick={reorderCategorySet}/>
-          <EditButton style={{marginRight: 5}} onClick={editCategorySet}/>
-          <CreateButton onClick={createCategorySet}/>
-        </div>
-        <div className="flex-row flex-centered">
-          <div className="text-bold" style={{marginRight: 20}}>
-            Create Category:
+        <TitleStyle>
+          <div>
+            <div>
+              <div className="text-bold">Current Category Set:</div>
+              <CategorySetSelector/>
+            </div>
+            <div>
+              <ReorderButton style={{marginRight: 5}} onClick={reorderCategorySet}/>
+              <EditButton style={{marginRight: 5}} onClick={editCategorySet}/>
+              <CreateButton onClick={createCategorySet}/>
+            </div>
           </div>
-          <button className="btn btn-primary" onClick={createCategory}>
-            <MdAdd size={30} color="white"/>
-          </button>
-        </div>
+          <hr/>
+          <div>
+            <div className="text-bold" style={{marginRight: 20}}>
+              Create Category:
+            </div>
+            <button className="btn btn-primary" onClick={createCategory}>
+              <MdAdd size={30} color="white"/>
+            </button>
+          </div>
+        </TitleStyle>
       </TitleCard>
       <QueryLoader query={categoryQuery} propName="categories" pageCard>
         <AllCategories/>

@@ -92,6 +92,31 @@ export function InventorySelector({dark = false} = {}) {
   });
 }
 
+function LoadedSingleInventorySelector({state, inventories}){
+  const options = inventories.map(inventory => ({
+    value: inventory._id,
+    label: inventory.name,
+  }));
+  const [value, setValue] = state;
+  return (
+    <div style={{minWidth: 250, width: "100%"}}>
+      <Select
+        isSearchable options={options} value={value}
+        onChange={e => setValue(e)}
+      />
+    </div>
+  );
+}
+
+export function SingleInventorySelector(props) {
+  const allInventoryQuery = useGetAllInventories();
+  return (
+    <QueryLoader query={allInventoryQuery} propName="inventories">
+      <LoadedSingleInventorySelector {...props}/>
+    </QueryLoader>
+  )
+}
+
 export function CSSetSelector() {
   const selectedId = useSelector(selectCSSetId);
   const dispatch = useDispatch();

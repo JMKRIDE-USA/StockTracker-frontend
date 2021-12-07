@@ -75,12 +75,13 @@ export function ObjectForm({
       let [newData, errors] = preProcessData(JSON.parse(JSON.stringify(submissionData)));
       submissionData = newData;
       if(errors.length){
-        setErrorText("Validation Errors:", errors);
+        setErrorText("Validation Errors: " + errors);
         setSubmissionResult(false);
         return;
       }
     }
     setSubmitting(true);
+    console.log(submissionData)
     return await submitFn(submissionData);
   }
   return (

@@ -232,6 +232,31 @@ export const useAdjustPartQuantity = ({partId}, options = {}) => {
   return createMutationCall(mutationFn, "adjusting part quantity");
 }
 
+export const useTransferPart = ({partId}, options = {}) => {
+  const header = useSelector(selectAuthHeader);
+  const inventoryId = useSelector(selectInventoryId);
+  const mutationFn = useMutation(
+    ({to_submit}) => fetch(
+      (config.backend_url 
+        + "part/id/" + partId 
+        + "/inventory/id/" + inventoryId
+        + "/transfer"
+      ), {
+        method: "POST",
+        headers: {...header, 'Content-Type': 'application/json'},
+        body: JSON.stringify(to_submit),
+      }
+    ),
+    mergeQueryOptions(options, {
+      onSuccess: async () => {
+        queryClient.invalidateQueries('quantity-inventory')
+        queryClient.invalidateQueries('cs-inventory')
+      },
+    })
+  );
+  return createMutationCall(mutationFn, "transferring part quantity");
+}
+
 export const useGetLogsEndpoint = (endpoint, options) =>
   useGetInventoryLogQuery(endpoint, options)
 

@@ -13,10 +13,15 @@ import { QueryLoader } from '../modules/data.js';
 import { PartsDisplay } from '../components/inventory-display.js';
 import { PartHistoryDisplayChart } from '../components/quantity-history-display.js';
 import { PageableLogTable } from '../components/tables/logs.js';
+import { ObjectForm } from '../components/object-form.js';
+import { SingleInventorySelector } from '../components/selectors.js';
+import { selectInventoryId } from '../redux/inventorySlice.js';
+import { SelectorLoader } from '../redux/loader.js';
 import {
   useGetPart,
   useGetAllParts,
   useSearchAllParts,
+  useTransferPart,
 } from '../modules/inventory.js';
 
 
@@ -37,21 +42,63 @@ function PartChartCard({part}) {
   );
 }
 
+function TransferPartCard({part, inventoryId}) {
+  const useMakeSubmitFn = (options) => useTransferPart({partId: part._id}, options);
+  const stateList = [{
+    key: "quantity", label: "Transfer Quantity",
+    initialState: 0,
+    component: (props) => (
+      <input
+        type="number" name="quantity"
+        className="form-control"
+        {...props}
+      />
+    ),
+    formatFn: _=>_,
+    componentStyle: {maxWidth: 100},
+  },
+  {
+    key: "toInventoryId", label: "Destination", initialState: "",
+    formatFn: i => i?.value,
+    component: (props) => (
+      <SingleInventorySelector {...props}/>
+    ),
+  }]
+  return <ObjectForm
+    useMakeSubmitFn={useMakeSubmitFn} buttonText="Submit"
+    stateList={stateList} preProcessData={((data) => ([
+      data,
+      data.toInventoryId === inventoryId ? "Cannot transfer to the current inventory!" : ""
+    ]))}
+  />
+}
+
 function PartInfoCard({part}) {
   const history = useHistory()
   const editPart  = useCallback(
     () => history.push('/edit-part/' + part._id),
     [history, part._id],
   )
+  const [transferPart, setTransferPart] = useState(false);
   return (
-    <TitleCard title={"Part: " + part.name}>
-      <InfoListFromObject data={{
-        "Created At": ISOToReadableString(part.createdAt),
-        "Created By": part.creator.firstName + " " + part.creator.lastName,
-        "Last Update": ISOToReadableString(part.updatedAt),
-      }}/>
-      <button style={{marginLeft: 20}} className="btn btn-secondary" onClick={editPart}>Edit Part</button>
-    </TitleCard>
+    <>
+      <TitleCard title={"Part: " + part.name}>
+        <InfoListFromObject data={{
+          "Created At": ISOToReadableString(part.createdAt),
+          "Created By": part.creator.firstName + " " + part.creator.lastName,
+          "Last Update": ISOToReadableString(part.updatedAt),
+        }}/>
+        <div style={{flexDirection: "row"}}>
+          <button style={{marginLeft: 20}} className="btn btn-secondary" onClick={editPart}>Edit Part</button>
+          <button style={{marginLeft: 20}} className="btn btn-secondary" onClick={() => setTransferPart(!transferPart)}>Transfer Part</button>
+        </div>
+      </TitleCard>
+      {transferPart && (
+        <SelectorLoader selectorFn={selectInventoryId} propName="inventoryId">
+          <TransferPartCard part={part}/>
+        </SelectorLoader> 
+      )}
+    </>
   );
 }
 

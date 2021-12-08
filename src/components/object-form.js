@@ -81,7 +81,6 @@ export function ObjectForm({
       }
     }
     setSubmitting(true);
-    console.log(submissionData)
     return await submitFn(submissionData);
   }
   return (

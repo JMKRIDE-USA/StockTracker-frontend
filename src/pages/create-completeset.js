@@ -3,10 +3,7 @@ import React, { useCallback } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 
 import { getStateList, FakeCompleteSetIcon } from '../components/completeset-form.js';
-import { TitleCard } from '../components/common.js';
-import { BackButton, DeleteButton } from '../components/buttons.js';
-import { ObjectForm } from '../components/object-form.js';
-import { QueryLoader } from '../modules/data.js';
+import { TitleCard, BackButton, DeleteButton, ObjectForm, QueryLoader } from 'jeffdude-frontend-helpers';
 import {
   useCreateCompleteSet, usePatchCompleteSet, useGetCSById, useDeleteCS, useGetAllParts,
 } from '../modules/inventory.js';

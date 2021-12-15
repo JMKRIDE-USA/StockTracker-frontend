@@ -9,16 +9,15 @@ import { QueryClientProvider } from 'react-query';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
-import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 
-import store from './redux/store.js';
-import {
-  selectAuthState,
-  selectAccessToken,
-  fetchAuthRequest
-} from './redux/authSlice.js';
-import { queryClient } from './modules/data.js';
+import { 
+  makeStore, selectAuthState, selectAccessToken, fetchAuthRequest, 
+  queryClient, configure,
+} from 'jeffdude-frontend-helpers';
+
+import inventoryReducer from './inventorySlice.js'
+import inventoryPostAuthFn from './inventoryPostAuthALM.js'
 
 import Header from './components/header.js';
 
@@ -122,18 +121,27 @@ function AppContent() {
 }
 
 function App() {
-  const persistor = persistStore(store);
+  console.log(configure)
+  /*
+  configure({
+    backendUrl: "https://localhost:3000"
+  })
+  */
+  const [store, persistor] = makeStore({
+    reducers: {'inventory': inventoryReducer},
+    postAuthFn: inventoryPostAuthFn,
+  })
 
   return (
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <PersistGate loading={null} persistor={persistor}>
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <PersistGate persistor={persistor} loading={null}>
           <DndProvider backend={HTML5Backend} debugMode={true}>
             <AppContent/>
           </DndProvider >
         </PersistGate>
-      </QueryClientProvider>
-    </Provider>
+      </Provider>
+    </QueryClientProvider>
   );
 }
 

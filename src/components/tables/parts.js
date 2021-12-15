@@ -3,7 +3,7 @@ import React, { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { Table } from './table.js';
-import { ISOToReadableString } from '../../modules/date.js';
+import { ISOToReadableString } from 'jeffdude-frontend-helpers';
 
 function ViewButton({id}) {
   const history = useHistory();

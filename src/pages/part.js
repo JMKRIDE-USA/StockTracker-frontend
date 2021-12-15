@@ -4,19 +4,17 @@ import { useParams, useHistory } from 'react-router-dom';
 import { HiSearch } from 'react-icons/hi';
 import styled from 'styled-components';
 
-import { CreateButton } from '../components/buttons.js';
-import { PageCard, TitleCard } from '../components/common.js';
-import { ISOToReadableString } from '../modules/date.js';
-import { InfoListFromObject } from '../components/lists.js';
 import { PartTable } from '../components/tables/parts.js';
-import { QueryLoader } from '../modules/data.js';
 import { PartsDisplay } from '../components/inventory-display.js';
 import { PartHistoryDisplayChart } from '../components/quantity-history-display.js';
 import { PageableLogTable } from '../components/tables/logs.js';
-import { ObjectForm } from '../components/object-form.js';
 import { SingleInventorySelector } from '../components/selectors.js';
-import { selectInventoryId } from '../redux/inventorySlice.js';
-import { SelectorLoader } from '../redux/loader.js';
+import { selectInventoryId } from '../inventorySlice.js';
+import { 
+  CreateButton, PageCard, TitleCard,
+  ISOToReadableString, InfoListFromObject, QueryLoader, 
+  ObjectForm, SelectorLoader,
+} from 'jeffdude-frontend-helpers';
 import {
   useGetPart,
   useGetAllParts,

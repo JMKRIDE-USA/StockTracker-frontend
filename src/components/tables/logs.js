@@ -10,11 +10,10 @@ import {
 } from 'react-icons/hi';
 
 import { Table, ExpandableInfoObjectCell, ClickableTextCell } from './table.js';
-import { ISOToReadableString } from '../../modules/date.js';
-import { QueryLoader } from '../../modules/data.js';
-import { OptionalCard } from '../../components/common.js';
+import { 
+  QueryLoader, OptionalCard, ISOToReadableString, selectInventoryId 
+} from 'jeffdude-frontend-helpers';
 import { useGetLogsEndpoint } from '../../modules/inventory.js';
-import { selectInventoryId } from '../../redux/inventorySlice.js';
 
 const HeaderRowStyle = styled.div`
   display: flex;

@@ -29,14 +29,13 @@ import {
 } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 
-import { PageCard } from '../components/common.js';
+import { PageCard, QueryLoader } from 'jeffdude-frontend-helpers';
 import { 
   useGetPart,
   useGetPartsByCategory,
   useGetPartsByCompleteSet,
   useGetHistory,
 } from '../modules/inventory.js';
-import { QueryLoader } from '../modules/data.js';
 import { colorNameToHex, colorNameToTransparentHex } from '../constants.js';
 import { destroyChartIfNecessary, registerChart } from '../modules/chart.js';
 import { DateSelector } from './selectors.js';

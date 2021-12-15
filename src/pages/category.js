@@ -2,12 +2,10 @@ import React from 'react';
 
 import { useParams } from 'react-router-dom';
 
-import { TitleCard } from '../components/common.js';
-import { InfoListFromObject } from '../components/lists.js';
+import { InfoListFromObject, QueryLoader, TitleCard} from 'jeffdude-frontend-helpers';
 import { useGetCategory } from '../modules/inventory.js';
 import { CategoryDisplayCard } from '../components/inventory-display.js';
 import { PageableLogTable } from '../components/tables/logs.js';
-import { QueryLoader } from '../modules/data.js';
 import {
   CategoryHistoryDisplayChart 
 } from '../components/quantity-history-display.js';

@@ -2,8 +2,7 @@ import React from 'react';
 
 import { useDispatch } from 'react-redux';
 
-import { resetAuth } from '../redux/authSlice.js';
-import { PageCard } from '../components/common.js';
+import { resetAuth, PageCard  } from 'jeffdude-frontend-helpers';
 
 
 function AccessDenied() {

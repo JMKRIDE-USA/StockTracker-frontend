@@ -2,11 +2,9 @@ import React, { useCallback } from 'react';
 
 import { useHistory, useParams } from 'react-router-dom';
 
-import { QueryLoader } from '../modules/data.js';
+import { QueryLoader, BackButton, TitleCard } from 'jeffdude-frontend-helpers';
 import { OrderableList } from '../components/orderable-list.js';
 import { useGetAllCS, useGetCSSetById, useSetCSSetCSOrder } from '../modules/inventory.js';
-import { BackButton } from '../components/buttons.js';
-import { TitleCard } from '../components/common.js';
 
 
 function CSSetCSList({completeSets, CSSet}) {

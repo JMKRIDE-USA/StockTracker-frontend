@@ -9,7 +9,7 @@ import {
   HiChevronDown,
 } from 'react-icons/hi';
 
-import { InfoListFromObject } from '../lists.js';
+import { InfoListFromObject } from 'jeffdude-frontend-helpers';
 
 export const ClickableTextCell = ({value}) => {
   const { text, link } = value;

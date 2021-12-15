@@ -7,7 +7,8 @@ import { useSelector } from 'react-redux';
 
 import logo from '../assets/JMKRIDE_RWU_BlackBG.svg';
 import { InventorySelector } from './selectors.js';
-import { selectAuthState } from '../redux/authSlice.js';
+
+import { selectAuthState } from 'jeffdude-frontend-helpers';
 
 
 export default function Header() {

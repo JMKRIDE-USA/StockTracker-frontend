@@ -5,17 +5,17 @@ import {
   selectUserId,
   selectAuthHeader,
   fetchAuthRequest,
-} from '../redux/authSlice.js';
+  mergeQueryOptions, createMutationCall,
+  useGetQuery, queryClient,
+} from 'jeffdude-frontend-helpers';
 import {
   selectInventoryId,
   selectCategorySetId,
   selectCSSetId,
   wipeDefaults,
-} from '../redux/inventorySlice.js';
+} from '../inventorySlice.js';
 import config from '../config.js';
-import { mergeQueryOptions, createMutationCall } from './data.js';
 
-import { useGetQuery, queryClient } from './data.js';
 
 function useGetInventoryStructureQuery(endpoint, options) {
   return useGetQuery(

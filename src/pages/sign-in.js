@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { useLogin } from '../modules/auth.js';
-import { PageCard, DisableCover } from '../components/common.js';
-import { LoadingIcon } from '../components/loading.js';
-import { ResultIndicator } from '../components/result.js';
+import { useLogin, PageCard, DisableCover, LoadingIcon, ResultIndicator } from 'jeffdude-frontend-helpers';
 
 
 function SignInForm() {

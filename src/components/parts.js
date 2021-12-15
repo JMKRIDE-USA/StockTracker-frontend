@@ -4,15 +4,15 @@ import { HiXCircle } from 'react-icons/hi';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { QueryLoader } from '../modules/data.js';
+import { 
+  QueryLoader, LoadingText, ResultIndicator, 
+} from 'jeffdude-frontend-helpers';
 import { colorNameToHex, colorIsDark } from '../constants.js';
 import {
   useGetPart,
   useAdjustPartQuantity,
   useAdjustCompleteSetQuantity,
 } from '../modules/inventory.js';
-import { LoadingText } from './loading.js';
-import { ResultIndicator } from './result.js';
 
 
 const AdjustmentForm = styled.div`

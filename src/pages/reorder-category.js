@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 
 import { useHistory, useParams } from 'react-router-dom';
 
-import { QueryLoader } from '../modules/data.js';
+import { QueryLoader } from 'jeffdude-frontend-helpers';
 import { OrderableList } from '../components/orderable-list.js';
 import {
   useGetPartsByCategory,

@@ -2,8 +2,7 @@ import React, { useCallback } from 'react';
 
 import { useHistory, useParams } from 'react-router-dom';
 
-import { TitleCard } from '../components/common.js';
-import { BackButton, DeleteButton } from '../components/buttons.js';
+import { TitleCard, BackButton, DeleteButton, QueryLoader, ObjectForm } from 'jeffdude-frontend-helpers';
 import { CategorySelector } from '../components/selectors.js';
 import { 
   useCreateCategorySet,
@@ -12,8 +11,6 @@ import {
   usePatchCategorySet,
   useDeleteCategorySet,
 } from '../modules/inventory.js';
-import { QueryLoader } from '../modules/data.js';
-import { ObjectForm } from '../components/object-form.js';
 
 
 const getStateList = (categorySet, categories) => ([

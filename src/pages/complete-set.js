@@ -5,15 +5,15 @@ import styled from 'styled-components';
 import { MdAdd } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 
-import { QueryLoader } from '../modules/data.js';
+import { 
+  QueryLoader, ReorderButton, EditButton, CreateButton, BackButton,
+  PageCard, TitleCard 
+} from 'jeffdude-frontend-helpers';
+
 import { WithdrawAuxiliaryPartsCheckbox } from '../components/forms/checkboxes.js';
-import { selectCSSetId } from '../redux/inventorySlice.js';
+import { selectCSSetId } from '../inventorySlice.js';
 import { useGetAllCS, useGetCSById } from '../modules/inventory.js';
 import { CSSetSelector } from '../components/selectors.js';
-import { PageCard, TitleCard } from '../components/common.js';
-import { 
-  ReorderButton, EditButton, CreateButton, BackButton 
-} from '../components/buttons.js';
 import { PartsDisplay } from '../components/inventory-display.js';
 import { CompleteSetIcon } from '../components/completeset-icons.js';
 import {

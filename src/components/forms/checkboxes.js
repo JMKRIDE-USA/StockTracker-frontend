@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
+import { 
+  ResultIndicator, LoadingIcon, SelectorLoader,
+  selectDebug, fetchAuthRequest, 
+} from 'jeffdude-frontend-helpers';
 
-import { fetchAuthRequest } from '../../redux/authSlice.js'
-import { SelectorLoader } from '../../redux/loader.js';
-import { selectDebug, selectWithdrawAuxiliaryParts } from '../../redux/inventorySlice.js';
+import { selectWithdrawAuxiliaryParts } from '../../inventorySlice.js';
 import { useSetUserSetting } from '../../modules/inventory.js'
-import { LoadingIcon } from '../../components/loading.js';
-import { ResultIndicator } from '../../components/result.js';
 
 
 const CheckboxStyle = styled.div`

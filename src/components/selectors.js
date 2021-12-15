@@ -6,12 +6,10 @@ import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-import { AUTH_STATE, authStateToString } from '../constants.js';
 import {
-  QueryLoader,
-  onQuerySuccess,
-  queryClient,
-} from '../modules/data.js';
+  QueryLoader, onQuerySuccess, queryClient,
+  SelectorLoader, AUTH_STATE, authStateToString,
+} from 'jeffdude-frontend-helpers';
 import {
   setInventoryId,
   setCSSetId,
@@ -20,7 +18,7 @@ import {
   setCategorySetId,
   selectCategorySetId,
   selectPartTypeCategories,
-} from '../redux/inventorySlice.js';
+} from '../inventorySlice.js';
 import {
   useGetAllInventories,
   useGetAllCategorySets,
@@ -34,7 +32,7 @@ import {
   useSetCSSet,
 } from '../modules/inventory.js';
 import { allColors } from '../constants.js';
-import { SelectorLoader } from '../redux/loader.js';
+import { } from 'jeffdude-frontend-helpers';
 
 
 export function GenericSelector({queryFn, onChange, selectedId, name, dark = false}) {

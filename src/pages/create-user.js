@@ -2,13 +2,12 @@ import React, { useCallback } from 'react';
 
 import { useHistory, useParams } from 'react-router-dom';
 
-import { QueryLoader } from '../modules/data.js';
-import { TitleCard } from '../components/common.js';
+import { 
+  QueryLoader, TitleCard, ObjectForm, TextComponent,
+  useCreateUser, usePatchUser, useGetUser, BackButton,
+} from 'jeffdude-frontend-helpers';
 import { permissionLevelToAuthState, authStateToString } from '../constants.js';
-import { ObjectForm, TextComponent } from '../components/object-form.js';
 import { PermissionSelector } from '../components/selectors.js';
-import { useCreateUser, usePatchUser, useGetUser } from '../modules/auth.js';
-import { BackButton } from '../components/buttons.js'
 
 
 const getStateList = (user) => ([

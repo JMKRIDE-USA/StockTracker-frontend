@@ -5,9 +5,7 @@ import { useHistory } from 'react-router-dom';
 
 import { Bar } from 'react-chartjs-2';
 
-import { PageCard } from '../components/common.js';
-import { ReorderButton, EditButton } from '../components/buttons.js';
-import { QueryLoader } from '../modules/data.js';
+import { PageCard, ReorderButton, EditButton, QueryLoader } from 'jeffdude-frontend-helpers';
 import { colorNameToHex } from '../constants.js';
 import { useGetPartsByCategory } from '../modules/inventory.js';
 import { PartInfoAndControls } from './parts.js';

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { PageCard } from '../components/common.js';
+import { PageCard } from 'jeffdude-frontend-helpers';
 
 
 function NotFound() {

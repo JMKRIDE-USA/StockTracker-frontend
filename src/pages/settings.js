@@ -5,8 +5,8 @@ import { TiDeleteOutline } from 'react-icons/ti';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { TitleCard, PageCard, DisableCover } from '../components/common.js';
-import { fetchAuthRequest } from '../redux/authSlice.js';
+import { TitleCard, PageCard, DisableCover } from 'jeffdude-frontend-helpers';
+import { fetchAuthRequest } from 'jeffdude-frontend-helpers';
 import {
   InventorySelector, SingleCategorySelector, SinglePartSelector,
 } from '../components/selectors.js';
@@ -14,22 +14,22 @@ import {
   selectInventoryId,
   selectAuxiliaryParts,
   selectPartTypeCategories,
-} from '../redux/inventorySlice.js';
+} from '../inventorySlice.js';
 import {
   useGetAllParts,
   useSetUserSetting,
   useGetAllCategories,
   useGetInventory,
 } from '../modules/inventory.js';
-import { QueryLoader } from '../modules/data.js';
-import { CreateButton, EditButton } from '../components/buttons.js';
-import { ObjectForm } from '../components/object-form.js';
-import { SelectorLoader } from '../redux/loader.js';
-import { LoadingIcon } from '../components/loading.js';
-import { ResultIndicator } from '../components/result.js';
+import { QueryLoader } from 'jeffdude-frontend-helpers';
+import { CreateButton, EditButton } from 'jeffdude-frontend-helpers';
+import { ObjectForm } from 'jeffdude-frontend-helpers';
+import { SelectorLoader } from 'jeffdude-frontend-helpers';
+import { LoadingIcon } from 'jeffdude-frontend-helpers';
+import { ResultIndicator } from 'jeffdude-frontend-helpers';
 import { DebugCheckbox, WithdrawAuxiliaryPartsCheckbox } from '../components/forms/checkboxes.js';
-import { InfoListFromObject } from '../components/lists.js';
-import { ISOToReadableString } from '../modules/date.js';
+import { InfoListFromObject } from 'jeffdude-frontend-helpers';
+import { ISOToReadableString } from 'jeffdude-frontend-helpers';
 
 const InventorySelectorStyle = styled.div`
   flex-direction: column;

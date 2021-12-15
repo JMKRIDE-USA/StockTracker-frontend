@@ -2,15 +2,15 @@ import React, { useCallback } from 'react';
 
 import { useHistory, useParams } from 'react-router-dom';
 
-import { TitleCard, PageCard } from '../components/common.js';
-import { QueryLoader } from '../modules/data.js';
-import { useGetUser } from '../modules/auth.js';
-import { InfoListFromObject } from '../components/lists.js';
-import { ISOToReadableString } from '../modules/date.js';
+import { TitleCard, PageCard } from 'jeffdude-frontend-helpers';
+import { QueryLoader } from 'jeffdude-frontend-helpers';
+import { useGetUser } from 'jeffdude-frontend-helpers';
+import { InfoListFromObject } from 'jeffdude-frontend-helpers';
+import { ISOToReadableString } from 'jeffdude-frontend-helpers';
 import { AllUserTable } from '../components/tables/users.js';
 import { permissionLevelToAuthState, authStateToString } from '../constants.js';
-import { useDeleteUser } from '../modules/auth.js';
-import { CreateButton, DeleteButton, BackButton } from '../components/buttons.js';
+import { useDeleteUser } from 'jeffdude-frontend-helpers';
+import { CreateButton, DeleteButton, BackButton } from 'jeffdude-frontend-helpers';
 
 function UserInfoCard({user}) {
   const history = useHistory()

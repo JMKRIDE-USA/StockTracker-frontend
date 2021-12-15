@@ -4,10 +4,8 @@ import { useDrag, useDrop } from 'react-dnd';
 import styled from 'styled-components';
 import update from 'immutability-helper';
 
-import { ResultIndicator } from '../components/result.js';
+import { ResultIndicator, DisableCover, LoadingIcon } from 'jeffdude-frontend-helpers';
 import { colorNameToHex, colorIsDark } from '../constants.js';
-import { DisableCover } from '../components/common.js';
-import { LoadingIcon } from '../components/loading.js';
 
 
 const ItemComponent = styled.div`

@@ -2,14 +2,11 @@ import React, { useCallback } from 'react';
 
 import { useHistory, useParams } from 'react-router-dom';
 
-import { TitleCard } from '../components/common.js';
-import { BackButton, DeleteButton } from '../components/buttons.js';
+import { TitleCard, BackButton, DeleteButton, QueryLoader, ObjectForm } from 'jeffdude-frontend-helpers';
 import { MultiCSSelector } from '../components/selectors.js';
 import { 
   useCreateCSSet, useGetCSSetById, useGetAllCS, usePatchCSSet, useDeleteCSSet
 } from '../modules/inventory.js';
-import { QueryLoader } from '../modules/data.js';
-import { ObjectForm } from '../components/object-form.js';
 
 
 const getStateList = ({CSSet, completeSets} = {}) => ([

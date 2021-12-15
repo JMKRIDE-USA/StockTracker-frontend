@@ -2,10 +2,8 @@ import React, { useCallback } from 'react';
 
 import { useHistory } from 'react-router-dom';
 
-import { QueryLoader } from '../../modules/data.js';
-import { useGetAllUsers } from '../../modules/auth.js';
+import { ISOToReadableString, QueryLoader, useGetAllUsers  } from 'jeffdude-frontend-helpers';
 import { Table } from './table.js';
-import { ISOToReadableString } from '../../modules/date.js';
 
 
 const ViewUserCell = ({value}) => {

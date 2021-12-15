@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { TitleCard } from '../components/common.js';
+import { TitleCard } from 'jeffdude-frontend-helpers';
 import { PageableLogTable } from '../components/tables/logs.js';
 
 export default function AllLogsPage() {

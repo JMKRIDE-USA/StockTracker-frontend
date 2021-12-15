@@ -5,10 +5,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import {
   useGetPart, useCreatePart, usePatchPart, useDeletePart,
 } from '../modules/inventory.js';
-import { ObjectForm } from '../components/object-form.js';
-import { QueryLoader } from '../modules/data.js';
-import { TitleCard } from '../components/common.js';
-import { BackButton, DeleteButton } from '../components/buttons.js';
+import { ObjectForm, QueryLoader, TitleCard, BackButton, DeleteButton } from 'jeffdude-frontend-helpers';
 import { CategorySelector, ColorSelector } from '../components/selectors.js';
 
 

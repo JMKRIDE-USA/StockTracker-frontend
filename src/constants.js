@@ -33,6 +33,7 @@ export const allColors = {
   Orange: "#f26522",
   Lavender: "#a98ec3",
   Green: "#9ccb3b",
+  ForestGreen: "#4c7200",
   Marine: "#276cdb",
   Violet: "#ac519f",
   Mint: "#8fd0b8",
